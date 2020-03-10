@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		383CB06221E5F58500398720 /* index2.html in Resources */ = {isa = PBXBuildFile; fileRef = 383CB06121E5F58500398720 /* index2.html */; };
 		3849FEA521E5E1DD00662E95 /* index.html in Resources */ = {isa = PBXBuildFile; fileRef = 3849FEA421E5E1DD00662E95 /* index.html */; };
-		3875C6F8228F1A3A00F6B626 /* UIWebViewTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3875C6F7228F1A3A00F6B626 /* UIWebViewTestController.swift */; };
 		3875C6FA228F1A4800F6B626 /* WKWebViewTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3875C6F9228F1A4800F6B626 /* WKWebViewTestController.swift */; };
 		387FB58B230EA02000DB7985 /* CocoaDebug.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387FB46F230EA02000DB7985 /* CocoaDebug.swift */; };
 		387FB58C230EA02000DB7985 /* CocoaDebugSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387FB470230EA02000DB7985 /* CocoaDebugSettings.swift */; };
@@ -234,10 +233,8 @@
 		387FB667230EA02000DB7985 /* _MLBFilePreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB56B230EA02000DB7985 /* _MLBFilePreviewController.m */; };
 		387FB668230EA02000DB7985 /* _MLBImageResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB56C230EA02000DB7985 /* _MLBImageResources.m */; };
 		387FB669230EA02000DB7985 /* _MLBFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB56E230EA02000DB7985 /* _MLBFileInfo.m */; };
-		387FB66A230EA02000DB7985 /* _UIWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB570230EA02000DB7985 /* _UIWebView+Swizzling.m */; };
 		387FB66B230EA02000DB7985 /* _Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB571230EA02000DB7985 /* _Swizzling.m */; };
 		387FB66C230EA02000DB7985 /* _NSObject+UIDebuggingInformationOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB572230EA02000DB7985 /* _NSObject+UIDebuggingInformationOverlay.m */; };
-		387FB66D230EA02000DB7985 /* _WKWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB573230EA02000DB7985 /* _WKWebView+Swizzling.m */; };
 		387FB66E230EA02000DB7985 /* Bubble.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387FB576230EA02000DB7985 /* Bubble.swift */; };
 		387FB66F230EA02000DB7985 /* _WindowHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387FB577230EA02000DB7985 /* _WindowHelper.swift */; };
 		387FB670230EA02000DB7985 /* CocoaDebugNavigationController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 387FB578230EA02000DB7985 /* CocoaDebugNavigationController.swift */; };
@@ -273,10 +270,8 @@
 		387FB68E230EA03500DB7985 /* _MLBFilePreviewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB56B230EA02000DB7985 /* _MLBFilePreviewController.m */; };
 		387FB68F230EA03500DB7985 /* _MLBImageResources.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB56C230EA02000DB7985 /* _MLBImageResources.m */; };
 		387FB690230EA03500DB7985 /* _MLBFileInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB56E230EA02000DB7985 /* _MLBFileInfo.m */; };
-		387FB691230EA03500DB7985 /* _UIWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB570230EA02000DB7985 /* _UIWebView+Swizzling.m */; };
 		387FB692230EA03500DB7985 /* _Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB571230EA02000DB7985 /* _Swizzling.m */; };
 		387FB693230EA03500DB7985 /* _NSObject+UIDebuggingInformationOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB572230EA02000DB7985 /* _NSObject+UIDebuggingInformationOverlay.m */; };
-		387FB694230EA03500DB7985 /* _WKWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB573230EA02000DB7985 /* _WKWebView+Swizzling.m */; };
 		387FB695230EA03500DB7985 /* _WHDebugMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB57E230EA02000DB7985 /* _WHDebugMonitor.m */; };
 		387FB696230EA03500DB7985 /* _WHDebugConsoleLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB581230EA02000DB7985 /* _WHDebugConsoleLabel.m */; };
 		387FB697230EA03500DB7985 /* _WHDebugMemoryMonitor.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB584230EA02000DB7985 /* _WHDebugMemoryMonitor.m */; };
@@ -608,6 +603,10 @@
 		38975BD12325386200DA00A8 /* _GPBUnknownFieldSet.h in Headers */ = {isa = PBXBuildFile; fileRef = 38975B79232536B200DA00A8 /* _GPBUnknownFieldSet.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		38975BD22325386200DA00A8 /* _GPBDescriptor_PackagePrivate.h in Headers */ = {isa = PBXBuildFile; fileRef = 38975B7B232536B200DA00A8 /* _GPBDescriptor_PackagePrivate.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		38975BD32325386200DA00A8 /* _GPBDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = 38975B7D232536B200DA00A8 /* _GPBDictionary.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CE2A7F9024177C2900D0FD65 /* _WKWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB573230EA02000DB7985 /* _WKWebView+Swizzling.m */; };
+		CE2A7F9124177C2A00D0FD65 /* _WKWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB573230EA02000DB7985 /* _WKWebView+Swizzling.m */; };
+		CE2A7F9224177C8D00D0FD65 /* UIWebViewTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3875C6F7228F1A3A00F6B626 /* UIWebViewTestController.swift */; };
+		CE2A7F9324177C9600D0FD65 /* _UIWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB570230EA02000DB7985 /* _UIWebView+Swizzling.m */; };
 		EA1659D7204D1B14001472C1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA1659D6204D1B14001472C1 /* AppDelegate.swift */; };
 		EA1659D9204D1B14001472C1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA1659D8204D1B14001472C1 /* ViewController.swift */; };
 		EA1659DC204D1B14001472C1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA1659DA204D1B14001472C1 /* Main.storyboard */; };
@@ -2480,7 +2479,6 @@
 				387FB65A230EA02000DB7985 /* _OCLogStoreManager.m in Sources */,
 				EAF58043204E73C3001CA56D /* ASIInputStream.m in Sources */,
 				EAF5800C204E73C3001CA56D /* Timeline.swift in Sources */,
-				387FB66A230EA02000DB7985 /* _UIWebView+Swizzling.m in Sources */,
 				EAF58009204E73C3001CA56D /* TaskDelegate.swift in Sources */,
 				38975B85232536B300DA00A8 /* _Struct.pbobjc.m in Sources */,
 				EAF5801F204E73C3001CA56D /* Networking.swift in Sources */,
@@ -2543,7 +2541,6 @@
 				EAF58017204E73C3001CA56D /* ResponseSerialization.swift in Sources */,
 				EAF58034204E73C3001CA56D /* ASICloudFilesContainer.m in Sources */,
 				EAF5800F204E73C3001CA56D /* ParameterEncoding.swift in Sources */,
-				387FB66D230EA02000DB7985 /* _WKWebView+Swizzling.m in Sources */,
 				387FB679230EA02000DB7985 /* _WHDebugFPSMonitor.m in Sources */,
 				38975B90232536B300DA00A8 /* _GPBCodedInputStream.m in Sources */,
 				387FB58B230EA02000DB7985 /* CocoaDebug.swift in Sources */,
@@ -2556,6 +2553,7 @@
 				387FB593230EA02000DB7985 /* CrashDetailViewController.swift in Sources */,
 				387FB663230EA02000DB7985 /* _MLBFileTableViewCell.m in Sources */,
 				38975B8B232536B300DA00A8 /* _GPBWireFormat.m in Sources */,
+				CE2A7F9324177C9600D0FD65 /* _UIWebView+Swizzling.m in Sources */,
 				EAF5803B204E73C3001CA56D /* ASIS3ObjectRequest.m in Sources */,
 				EAF5800B204E73C3001CA56D /* NetworkReachabilityManager.swift in Sources */,
 				387FB66E230EA02000DB7985 /* Bubble.swift in Sources */,
@@ -2569,10 +2567,10 @@
 				387FB64F230EA02000DB7985 /* NetworkDetailViewController.swift in Sources */,
 				EAF58038204E73C3001CA56D /* ASICloudFilesRequest.m in Sources */,
 				387FB651230EA02000DB7985 /* _NetworkHelper.m in Sources */,
+				CE2A7F9024177C2900D0FD65 /* _WKWebView+Swizzling.m in Sources */,
 				387FB58E230EA02000DB7985 /* AppInfoViewController.swift in Sources */,
 				38975B92232536B300DA00A8 /* _GPBCodedOutputStream.m in Sources */,
 				EAF58042204E73C3001CA56D /* ASIAuthenticationDialog.m in Sources */,
-				3875C6F8228F1A3A00F6B626 /* UIWebViewTestController.swift in Sources */,
 				EAF58013204E73C3001CA56D /* Response.swift in Sources */,
 				38975B8A232536B300DA00A8 /* _SourceContext.pbobjc.m in Sources */,
 				387FB66C230EA02000DB7985 /* _NSObject+UIDebuggingInformationOverlay.m in Sources */,
@@ -2601,6 +2599,7 @@
 				387FB58F230EA02000DB7985 /* DeviceModel.swift in Sources */,
 				387FB64E230EA02000DB7985 /* NetworkViewController.swift in Sources */,
 				387FB671230EA02000DB7985 /* CocoaDebugViewController.swift in Sources */,
+				CE2A7F9224177C8D00D0FD65 /* UIWebViewTestController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2671,6 +2670,7 @@
 				387FB6B8230EA04400DB7985 /* CocoaDebugTabBarController.swift in Sources */,
 				387FB6B9230EA04400DB7985 /* CocoaDebugWindow.swift in Sources */,
 				387FB6BA230EA04400DB7985 /* Color.swift in Sources */,
+				CE2A7F9124177C2A00D0FD65 /* _WKWebView+Swizzling.m in Sources */,
 				387FB69B230EA03B00DB7985 /* _fishhook.c in Sources */,
 				387FB67B230EA03500DB7985 /* _HttpModel.m in Sources */,
 				387FB67C230EA03500DB7985 /* _NetworkHelper.m in Sources */,
@@ -2694,10 +2694,8 @@
 				387FB68E230EA03500DB7985 /* _MLBFilePreviewController.m in Sources */,
 				387FB68F230EA03500DB7985 /* _MLBImageResources.m in Sources */,
 				387FB690230EA03500DB7985 /* _MLBFileInfo.m in Sources */,
-				387FB691230EA03500DB7985 /* _UIWebView+Swizzling.m in Sources */,
 				387FB692230EA03500DB7985 /* _Swizzling.m in Sources */,
 				387FB693230EA03500DB7985 /* _NSObject+UIDebuggingInformationOverlay.m in Sources */,
-				387FB694230EA03500DB7985 /* _WKWebView+Swizzling.m in Sources */,
 				387FB695230EA03500DB7985 /* _WHDebugMonitor.m in Sources */,
 				387FB696230EA03500DB7985 /* _WHDebugConsoleLabel.m in Sources */,
 				387FB697230EA03500DB7985 /* _WHDebugMemoryMonitor.m in Sources */,

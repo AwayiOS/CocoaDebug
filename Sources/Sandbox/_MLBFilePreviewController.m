@@ -13,9 +13,11 @@
 #import "_Sandboxer-Header.h"
 #import "_Sandboxer.h"
 
-@interface _MLBFilePreviewController () <QLPreviewControllerDataSource, UIWebViewDelegate, WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
+@interface _MLBFilePreviewController () <QLPreviewControllerDataSource,
+//UIWebViewDelegate,
+WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
 
-@property (strong, nonatomic) UIWebView *webView;
+//@property (strong, nonatomic) UIWebView *webView;
 @property (strong, nonatomic) WKWebView *wkWebView;
 
 @property (strong, nonatomic) UITextView *textView;
@@ -48,9 +50,9 @@
         self.wkWebView.frame = self.view.bounds;
     }
     
-    if (self.webView) {
-        self.webView.frame = self.view.bounds;
-    }
+//    if (self.webView) {
+//        self.webView.frame = self.view.bounds;
+//    }
     
     if (self.textView) {
         self.textView.frame = self.view.bounds;
@@ -85,17 +87,18 @@
     }
     
     if (self.fileInfo.isCanPreviewInWebView) {
-        if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+//        if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
             self.wkWebView = [[WKWebView alloc] initWithFrame:self.view.bounds];
             self.wkWebView.backgroundColor = [UIColor whiteColor];
             self.wkWebView.navigationDelegate = self;
             [self.view addSubview:self.wkWebView];
-        } else {
-            self.webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
-            self.webView.backgroundColor = [UIColor whiteColor];
-            self.webView.delegate = self;
-            [self.view addSubview:self.webView];
-        }
+//        }
+//        else {
+//            self.webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
+//            self.webView.backgroundColor = [UIColor whiteColor];
+//            self.webView.delegate = self;
+//            [self.view addSubview:self.webView];
+//        }
     } else {
         switch (self.fileInfo.type) {
             case _MLBFileTypePList: {
@@ -118,15 +121,15 @@
 
 - (void)loadFile {
     if (self.fileInfo.isCanPreviewInWebView) {
-        if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
+//        if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
             if (@available(iOS 9.0, *)) {
                 [self.wkWebView loadFileURL:self.fileInfo.URL allowingReadAccessToURL:self.fileInfo.URL];
             } else {
                 // Fallback on earlier versions
             }
-        } else {
-            [self.webView loadRequest:[NSURLRequest requestWithURL:self.fileInfo.URL]];
-        }
+//        } else {
+//            [self.webView loadRequest:[NSURLRequest requestWithURL:self.fileInfo.URL]];
+//        }
     } else {
         switch (self.fileInfo.type) {
             case _MLBFileTypePList: {
@@ -192,22 +195,22 @@
     return self.fileInfo.URL;
 }
 
-#pragma mark - UIWebViewDelegate
-
-- (void)webViewDidStartLoad:(UIWebView *)webView {
-    ////NSLog(@"%@", NSStringFromSelector(_cmd));
-    [self.activityIndicatorView startAnimating];
-}
-
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
-    ////NSLog(@"%@", NSStringFromSelector(_cmd));
-    [self.activityIndicatorView stopAnimating];
-}
-
-- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-    ////NSLog(@"%@, error = %@", NSStringFromSelector(_cmd), error);
-    [self.activityIndicatorView stopAnimating];
-}
+//#pragma mark - UIWebViewDelegate
+//
+//- (void)webViewDidStartLoad:(UIWebView *)webView {
+//    ////NSLog(@"%@", NSStringFromSelector(_cmd));
+//    [self.activityIndicatorView startAnimating];
+//}
+//
+//- (void)webViewDidFinishLoad:(UIWebView *)webView {
+//    ////NSLog(@"%@", NSStringFromSelector(_cmd));
+//    [self.activityIndicatorView stopAnimating];
+//}
+//
+//- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
+//    ////NSLog(@"%@, error = %@", NSStringFromSelector(_cmd), error);
+//    [self.activityIndicatorView stopAnimating];
+//}
 
 #pragma mark - WKNavigationDelegate
 
