@@ -606,7 +606,6 @@
 		CE2A7F9024177C2900D0FD65 /* _WKWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB573230EA02000DB7985 /* _WKWebView+Swizzling.m */; };
 		CE2A7F9124177C2A00D0FD65 /* _WKWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB573230EA02000DB7985 /* _WKWebView+Swizzling.m */; };
 		CE2A7F9224177C8D00D0FD65 /* UIWebViewTestController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3875C6F7228F1A3A00F6B626 /* UIWebViewTestController.swift */; };
-		CE2A7F9324177C9600D0FD65 /* _UIWebView+Swizzling.m in Sources */ = {isa = PBXBuildFile; fileRef = 387FB570230EA02000DB7985 /* _UIWebView+Swizzling.m */; };
 		EA1659D7204D1B14001472C1 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA1659D6204D1B14001472C1 /* AppDelegate.swift */; };
 		EA1659D9204D1B14001472C1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA1659D8204D1B14001472C1 /* ViewController.swift */; };
 		EA1659DC204D1B14001472C1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = EA1659DA204D1B14001472C1 /* Main.storyboard */; };
@@ -954,7 +953,6 @@
 		387FB56C230EA02000DB7985 /* _MLBImageResources.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _MLBImageResources.m; sourceTree = "<group>"; };
 		387FB56D230EA02000DB7985 /* _MLBDirectoryContentsTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = _MLBDirectoryContentsTableViewController.h; sourceTree = "<group>"; };
 		387FB56E230EA02000DB7985 /* _MLBFileInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _MLBFileInfo.m; sourceTree = "<group>"; };
-		387FB570230EA02000DB7985 /* _UIWebView+Swizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "_UIWebView+Swizzling.m"; sourceTree = "<group>"; };
 		387FB571230EA02000DB7985 /* _Swizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = _Swizzling.m; sourceTree = "<group>"; };
 		387FB572230EA02000DB7985 /* _NSObject+UIDebuggingInformationOverlay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "_NSObject+UIDebuggingInformationOverlay.m"; sourceTree = "<group>"; };
 		387FB573230EA02000DB7985 /* _WKWebView+Swizzling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "_WKWebView+Swizzling.m"; sourceTree = "<group>"; };
@@ -1517,7 +1515,6 @@
 		387FB56F230EA02000DB7985 /* Swizzling */ = {
 			isa = PBXGroup;
 			children = (
-				387FB570230EA02000DB7985 /* _UIWebView+Swizzling.m */,
 				387FB571230EA02000DB7985 /* _Swizzling.m */,
 				387FB572230EA02000DB7985 /* _NSObject+UIDebuggingInformationOverlay.m */,
 				387FB573230EA02000DB7985 /* _WKWebView+Swizzling.m */,
@@ -2553,7 +2550,6 @@
 				387FB593230EA02000DB7985 /* CrashDetailViewController.swift in Sources */,
 				387FB663230EA02000DB7985 /* _MLBFileTableViewCell.m in Sources */,
 				38975B8B232536B300DA00A8 /* _GPBWireFormat.m in Sources */,
-				CE2A7F9324177C9600D0FD65 /* _UIWebView+Swizzling.m in Sources */,
 				EAF5803B204E73C3001CA56D /* ASIS3ObjectRequest.m in Sources */,
 				EAF5800B204E73C3001CA56D /* NetworkReachabilityManager.swift in Sources */,
 				387FB66E230EA02000DB7985 /* Bubble.swift in Sources */,
