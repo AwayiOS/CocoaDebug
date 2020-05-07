@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 #import "_MLBFilePreviewController.h"
@@ -13,18 +13,16 @@
 #import "_Sandboxer-Header.h"
 #import "_Sandboxer.h"
 
-@interface _MLBFilePreviewController () <QLPreviewControllerDataSource,
-//UIWebViewDelegate,
-WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
 
-//@property (strong, nonatomic) UIWebView *webView;
-@property (strong, nonatomic) WKWebView *wkWebView;
+@interface _MLBFilePreviewController () <QLPreviewControllerDataSource, WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
 
-@property (strong, nonatomic) UITextView *textView;
+@property (nonatomic, strong) WKWebView *wkWebView;
 
-@property (strong, nonatomic) UIActivityIndicatorView *activityIndicatorView;
+@property (nonatomic, strong) UITextView *textView;
 
-@property (strong, nonatomic) UIDocumentInteractionController *documentInteractionController;
+@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
+
+@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 
 @end
 
@@ -34,7 +32,7 @@ WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    // Do any additional setup after loading the view.
+    
     self.title = self.fileInfo.displayName.stringByDeletingPathExtension;
     self.view.backgroundColor = [UIColor whiteColor];
     
@@ -87,18 +85,10 @@ WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
     }
     
     if (self.fileInfo.isCanPreviewInWebView) {
-//        if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-            self.wkWebView = [[WKWebView alloc] initWithFrame:self.view.bounds];
-            self.wkWebView.backgroundColor = [UIColor whiteColor];
-            self.wkWebView.navigationDelegate = self;
-            [self.view addSubview:self.wkWebView];
-//        }
-//        else {
-//            self.webView = [[UIWebView alloc] initWithFrame:self.view.bounds];
-//            self.webView.backgroundColor = [UIColor whiteColor];
-//            self.webView.delegate = self;
-//            [self.view addSubview:self.webView];
-//        }
+        self.wkWebView = [[WKWebView alloc] initWithFrame:self.view.bounds];
+        self.wkWebView.backgroundColor = [UIColor whiteColor];
+        self.wkWebView.navigationDelegate = self;
+        [self.view addSubview:self.wkWebView];
     } else {
         switch (self.fileInfo.type) {
             case _MLBFileTypePList: {
@@ -121,15 +111,12 @@ WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
 
 - (void)loadFile {
     if (self.fileInfo.isCanPreviewInWebView) {
-//        if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-            if (@available(iOS 9.0, *)) {
-                [self.wkWebView loadFileURL:self.fileInfo.URL allowingReadAccessToURL:self.fileInfo.URL];
-            } else {
-                // Fallback on earlier versions
-            }
-//        } else {
-//            [self.webView loadRequest:[NSURLRequest requestWithURL:self.fileInfo.URL]];
-//        }
+
+        if (@available(iOS 9.0, *)) {
+            [self.wkWebView loadFileURL:self.fileInfo.URL allowingReadAccessToURL:self.fileInfo.URL];
+        } else {
+            // Fallback on earlier versions
+        }
     } else {
         switch (self.fileInfo.type) {
             case _MLBFileTypePList: {
@@ -145,15 +132,27 @@ WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
                     }else{
                         dispatch_async(dispatch_get_main_queue(), ^{
                             [self.activityIndicatorView stopAnimating];
+                            [self showAlert];
                         });
                     }
                 });
                 break;
             }
-            default:
+            default: {
+                [self showAlert];
+            }
                 break;
         }
     }
+}
+
+#pragma mark - alert
+- (void)showAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Not supported" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:cancelAction];
+    if (@available(iOS 13, *)) {alert.modalPresentationStyle = UIModalPresentationFullScreen;}
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 #pragma mark - Action
@@ -194,23 +193,6 @@ WKNavigationDelegate, WKUIDelegate, UIDocumentInteractionControllerDelegate>
 - (id<QLPreviewItem>)previewController:(QLPreviewController *)controller previewItemAtIndex:(NSInteger)index {
     return self.fileInfo.URL;
 }
-
-//#pragma mark - UIWebViewDelegate
-//
-//- (void)webViewDidStartLoad:(UIWebView *)webView {
-//    ////NSLog(@"%@", NSStringFromSelector(_cmd));
-//    [self.activityIndicatorView startAnimating];
-//}
-//
-//- (void)webViewDidFinishLoad:(UIWebView *)webView {
-//    ////NSLog(@"%@", NSStringFromSelector(_cmd));
-//    [self.activityIndicatorView stopAnimating];
-//}
-//
-//- (void)webView:(UIWebView *)webView didFailLoadWithError:(NSError *)error {
-//    ////NSLog(@"%@, error = %@", NSStringFromSelector(_cmd), error);
-//    [self.activityIndicatorView stopAnimating];
-//}
 
 #pragma mark - WKNavigationDelegate
 

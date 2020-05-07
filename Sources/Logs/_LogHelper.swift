@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,7 @@ public class _LogHelper: NSObject {
         let fileInfo = parseFileInfo(file: file, function: function, line: line)
         
         //2.
-        if let newLog = _OCLogModel.init(content: message, color: color, fileInfo: fileInfo, isTag: false) {
+        if let newLog = _OCLogModel.init(content: message, color: color, fileInfo: fileInfo, isTag: false, type: .none) {
             _OCLogStoreManager.shared().addLog(newLog)
         }
         

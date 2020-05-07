@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import Foundation
@@ -12,6 +12,18 @@ import Foundation
 
     @objc public static let shared = CocoaDebugSettings()
 
+    @objc public var isRunning: Bool = false
+
+    @objc public var slowAnimations: Bool = false {
+        didSet {            
+            if slowAnimations == false {
+                UIApplication.shared.windows.first?.layer.speed = 1;
+            }else{
+                UIApplication.shared.windows.first?.layer.speed = 0.1;
+            }
+        }
+    }
+    
     @objc public var responseShake: Bool = false {
         didSet {
             UserDefaults.standard.set(responseShake, forKey: "responseShake_CocoaDebug")
@@ -38,13 +50,14 @@ import Foundation
             if disableCrashRecording == false {
                 CrashLogger.shared.enable = true
             }else{
+                CrashLogger.shared.enable = false
                 CrashStoreManager.shared.resetCrashs()
             }
         }
     }
-    @objc public var disableHTMLConsoleMonitoring: Bool = false {
+    @objc public var enableWebViewMonitoring: Bool = false {
         didSet {
-            UserDefaults.standard.set(disableHTMLConsoleMonitoring, forKey: "disableHTMLConsoleMonitoring_CocoaDebug")
+            UserDefaults.standard.set(enableWebViewMonitoring, forKey: "enableWebViewMonitoring_CocoaDebug")
             UserDefaults.standard.synchronize()
         }
     }
@@ -184,6 +197,12 @@ import Foundation
         }
     }
     
+    //protobuf
+    @objc public var protobufTransferMap: [String: [String]]? = nil {
+        didSet {
+            _NetworkHelper.shared().protobufTransferMap = protobufTransferMap
+        }
+    }
     
     private override init() {
         responseShake = UserDefaults.standard.bool(forKey: "responseShake_CocoaDebug")
@@ -193,7 +212,7 @@ import Foundation
         visible = UserDefaults.standard.bool(forKey: "visible_CocoaDebug")
         showBubbleAndWindow = UserDefaults.standard.bool(forKey: "showBubbleAndWindow_CocoaDebug")
         disableCrashRecording = UserDefaults.standard.bool(forKey: "disableCrashRecording_CocoaDebug")
-        disableHTMLConsoleMonitoring = UserDefaults.standard.bool(forKey: "disableHTMLConsoleMonitoring_CocoaDebug")
+        enableWebViewMonitoring = UserDefaults.standard.bool(forKey: "enableWebViewMonitoring_CocoaDebug")
         disableLogMonitoring = UserDefaults.standard.bool(forKey: "disableLogMonitoring_CocoaDebug")
         disableNetworkMonitoring = UserDefaults.standard.bool(forKey: "disableNetworkMonitoring_CocoaDebug")
         tabBarSelectItem = UserDefaults.standard.integer(forKey: "tabBarSelectItem_CocoaDebug")
@@ -211,5 +230,8 @@ import Foundation
         logMaxCount = _NetworkHelper.shared().logMaxCount
         onlyURLs = _NetworkHelper.shared().onlyURLs
         ignoredURLs = _NetworkHelper.shared().ignoredURLs
+        
+        //protobuf
+        protobufTransferMap = _NetworkHelper.shared().protobufTransferMap
     }
 }

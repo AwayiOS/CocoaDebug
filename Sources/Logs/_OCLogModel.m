@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 #import "_OCLogModel.h"
@@ -12,12 +12,16 @@
 
 @implementation _OCLogModel
 
-- (instancetype)initWithContent:(NSString *)content color:(UIColor *)color fileInfo:(NSString *)fileInfo isTag:(BOOL)isTag
+- (instancetype)initWithContent:(NSString *)content color:(UIColor *)color fileInfo:(NSString *)fileInfo isTag:(BOOL)isTag type:(CocoaDebugToolType)type
 {
     if (self = [super init]) {
         
-        if ([fileInfo isEqualToString:@"TCP|TCP|1"]) {
-            fileInfo = @"TCP\n";
+        if ([fileInfo isEqualToString:@"XXX|XXX|1"]) {
+            if (type == CocoaDebugToolTypeProtobuf) {
+                fileInfo = @"Protobuf\n";
+            } else {
+                fileInfo = @"\n";
+            }
         }
         
         self.Id = [[NSUUID UUID] UUIDString];

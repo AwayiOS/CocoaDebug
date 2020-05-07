@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import Foundation
@@ -26,10 +26,12 @@ import Foundation
     @objc public static var emailCcRecipients: [String]? = nil
     ///set the main color with hexadecimal format. default value is `#42d459`.
     @objc public static var mainColor: String = "#42d459"
+    ///protobuf url and response class transfer map. default value is `nil`.
+    @objc public static var protobufTransferMap: [String: [String]]? = nil
     
     //MARK: - CocoaDebug enable
     @objc public static func enable() {
-        initializationMethod(serverURL: serverURL, ignoredURLs: ignoredURLs, onlyURLs: onlyURLs, tabBarControllers: tabBarControllers, emailToRecipients: emailToRecipients, emailCcRecipients: emailCcRecipients, mainColor: mainColor)
+        initializationMethod(serverURL: serverURL, ignoredURLs: ignoredURLs, onlyURLs: onlyURLs, tabBarControllers: tabBarControllers, emailToRecipients: emailToRecipients, emailCcRecipients: emailCcRecipients, mainColor: mainColor, protobufTransferMap: protobufTransferMap)
     }
     
     //MARK: - CocoaDebug disable
@@ -37,6 +39,15 @@ import Foundation
         deinitializationMethod()
     }
 
+    //MARK: - hide Bubble
+    @objc public static func hideBubble() {
+        CocoaDebugSettings.shared.showBubbleAndWindow = false
+    }
+    
+    //MARK: - show Bubble
+    @objc public static func showBubble() {
+        CocoaDebugSettings.shared.showBubbleAndWindow = true
+    }
 }
 
 //MARK: - swiftLog() usage only for Swift

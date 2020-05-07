@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 enum EditType {
@@ -19,7 +19,10 @@ class JsonViewController: UIViewController {
     
     @IBOutlet weak var textView: UITextView!
     @IBOutlet weak var imageView: UIImageView!
+    @IBOutlet weak var naviItem: UINavigationItem!
     
+    var naviItemTitleLabel: UILabel?
+
     var editType: EditType  = .unknown
     var httpModel: _HttpModel?
     var detailModel: NetworkDetailModel?
@@ -73,10 +76,15 @@ class JsonViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
+        naviItemTitleLabel = UILabel.init(frame: CGRect(x: 0, y: 0, width: 80, height: 40))
+        naviItemTitleLabel?.textAlignment = .center
+        naviItemTitleLabel?.textColor = Color.mainGreen
+        naviItemTitleLabel?.font = .boldSystemFont(ofSize: 20)
+        naviItemTitleLabel?.text = detailModel?.title
+        naviItem.titleView = naviItemTitleLabel
+        
         textView.textContainer.lineFragmentPadding = 15
 //        textView.textContainerInset = .zero
-        
-        self.title = detailModel?.title
         
         //判断类型 (默认类型URL)
         if detailModel?.title == "REQUEST HEADER" {
@@ -115,10 +123,27 @@ class JsonViewController: UIViewController {
         }
     }
     
+    //MARK: - alert
+    func showAlert() {
+        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .alert)
+        let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
+        let okAction = UIAlertAction.init(title: "Copy All", style: .default) { [weak self] _ in
+            UIPasteboard.general.string = self?.textView.text
+        }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        if #available(iOS 13, *) {alert.modalPresentationStyle = .fullScreen}
+        self.present(alert, animated: true, completion: nil)
+    }
+    
+    
+    
     
     //MARK: - override
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(selectAll(_:)) {
+            self.showAlert()
             return true
         }
         return super.canPerformAction(action, withSender: sender)

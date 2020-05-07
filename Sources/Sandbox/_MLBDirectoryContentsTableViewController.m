@@ -1,13 +1,10 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
-
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wdeprecated-declarations"
 
 #import "_MLBDirectoryContentsTableViewController.h"
 #import "_MLBFilePreviewController.h"
@@ -18,17 +15,28 @@
 #import "_Sandboxer-Header.h"
 #import "_NetworkHelper.h"
 #import "_MLBImageController.h"
+#import "_SandboxerHelper.h"
 
-@interface _MLBDirectoryContentsTableViewController () <QLPreviewControllerDataSource, UIViewControllerPreviewingDelegate, UIAlertViewDelegate>
+@interface _MLBDirectoryContentsTableViewController () <QLPreviewControllerDataSource, UIViewControllerPreviewingDelegate, UITableViewDataSource, UITableViewDelegate, UISearchBarDelegate>
 
-@property (strong, nonatomic) NSMutableArray<_MLBFileInfo *> *dataSource;
-@property (strong, nonatomic) _MLBFileInfo *previewingFileInfo;
-@property (strong, nonatomic) _MLBFileInfo *deletingFileInfo;
+@property (nonatomic, strong) NSMutableArray<_MLBFileInfo *> *dataSource;
+@property (nonatomic, strong) NSMutableArray<_MLBFileInfo *> *dataSource_cache;
+@property (nonatomic, strong) NSMutableArray<_MLBFileInfo *> *dataSource_search;
 
-@property (strong, nonatomic) UIBarButtonItem *refreshItem;
-@property (strong, nonatomic) UIBarButtonItem *editItem;
-@property (strong, nonatomic) UIBarButtonItem *deleteAllItem;
-@property (strong, nonatomic) UIBarButtonItem *deleteItem;
+@property (nonatomic, strong) _MLBFileInfo *previewingFileInfo;
+@property (nonatomic, strong) _MLBFileInfo *deletingFileInfo;
+
+@property (nonatomic, strong) UIBarButtonItem *refreshItem;
+@property (nonatomic, strong) UIBarButtonItem *editItem;
+@property (nonatomic, strong) UIBarButtonItem *closeItem;
+@property (nonatomic, strong) UIBarButtonItem *deleteAllItem;
+@property (nonatomic, strong) UIBarButtonItem *deleteItem;
+
+@property (nonatomic, strong) UITableView *tableView;
+@property (nonatomic, strong) UISearchBar *searchBar;
+
+@property (nonatomic, copy) NSString *randomId;
+@property (nonatomic, copy) NSString *searchText;
 
 @end
 
@@ -49,10 +57,6 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
                                                                     NSFontAttributeName:[UIFont boldSystemFontOfSize:20],
                                                                     NSForegroundColorAttributeName: [_NetworkHelper shared].mainColor
                                                                     };
-    
-    UIBarButtonItem *leftItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"_icon_file_type_close" inBundle:[NSBundle bundleForClass:self.class] compatibleWithTraitCollection:nil] style:UIBarButtonItemStyleDone target:self action:@selector(exit)];
-    leftItem.tintColor = [_NetworkHelper shared].mainColor;
-    self.navigationController.topViewController.navigationItem.leftBarButtonItem = leftItem;
 }
 
 - (void)exit {
@@ -60,9 +64,23 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
 }
 
 #pragma mark - View Lifecycle
+- (void)dealloc {
+    [[_SandboxerHelper sharedInstance].searchTextDictionary removeObjectForKey:self.randomId];
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+    
+    self.randomId = [_SandboxerHelper generateRandomId];
+
+    if (![_SandboxerHelper sharedInstance].searchTextDictionary) {
+        [_SandboxerHelper sharedInstance].searchTextDictionary = [NSMutableDictionary dictionary];
+    }
+    
+    //
+    UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapView)];
+    tap.cancelsTouchesInView = NO;
+    [self.view addGestureRecognizer:tap];
     
     //liman
     self.navigationController.navigationBar.barTintColor = [UIColor colorWithRed:31/255.0 green:33/255.0 blue:36/255.0 alpha:1.0];
@@ -78,50 +96,72 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
         }
     }
     
-    
+    //
     [self setupViews];
     [self registerForPreviewing];
-    
-    
-    //liman
-    self.view.backgroundColor = [UIColor blackColor];
-    self.tableView.backgroundColor = [UIColor blackColor];
-    self.tableView.tableFooterView = [[UIView alloc] init];
-    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
-    //liman
+    
+    self.searchText = [[_SandboxerHelper sharedInstance].searchTextDictionary objectForKey:self.randomId];
+
     [self loadDirectoryContents];
     [self endEditing];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
     if (self.tableView.isEditing) {
         [self.navigationController setToolbarHidden:YES animated:YES];
     }
+    [self.searchBar resignFirstResponder];
 }
 
 #pragma mark - Private Methods
-
 - (void)setupViews {
+    //暂时不用
+    self.editItem = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStylePlain target:self action:@selector(editAction)];
+    self.editItem.possibleTitles = [NSSet setWithObjects:@"Edit", @"Cancel", nil];
+    
+    //
     self.refreshItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(loadDirectoryContents)];
-    NSMutableArray<UIBarButtonItem *> *rightBarButtonItems = [NSMutableArray arrayWithObject:self.refreshItem];
-    if ([_Sandboxer shared].isFileDeletable || [_Sandboxer shared].isDirectoryDeletable) {
-        self.editItem = [[UIBarButtonItem alloc] initWithTitle:@"Edit" style:UIBarButtonItemStylePlain target:self action:@selector(editAction)];
-        self.editItem.possibleTitles = [NSSet setWithObjects:@"Edit", @"Cancel", nil];
-        [rightBarButtonItems addObject:self.editItem];
+    self.closeItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"_icon_file_type_close" inBundle:[NSBundle bundleForClass:self.class] compatibleWithTraitCollection:nil] style:UIBarButtonItemStyleDone target:self action:@selector(exit)];
+    
+    if (self.homeDirectory) {
+        self.navigationItem.leftBarButtonItems = @[self.closeItem];
+        self.navigationItem.rightBarButtonItems = @[self.refreshItem];
+    } else {
+        self.navigationItem.rightBarButtonItems = @[self.closeItem, self.refreshItem];
     }
     
-    self.navigationItem.rightBarButtonItems = rightBarButtonItems;
     
-    self.tableView.backgroundColor = [UIColor whiteColor];
+    //
+    self.view.backgroundColor = [UIColor blackColor];
+    self.tableView = [[UITableView alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, self.view.bounds.size.height - 44 - [UIApplication sharedApplication].statusBarFrame.size.height) style:UITableViewStylePlain];
+    self.tableView.dataSource = self;
+    self.tableView.delegate = self;
     self.tableView.allowsMultipleSelectionDuringEditing = YES;
-    [self.tableView registerClass:[_MLBFileTableViewCell class] forCellReuseIdentifier:_MLBFileTableViewCellReuseIdentifier];
     self.tableView.rowHeight = 60.0;
-
+    self.tableView.backgroundColor = [UIColor blackColor];
+    self.tableView.tableFooterView = [[UIView alloc] init];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    [self.tableView registerClass:[_MLBFileTableViewCell class] forCellReuseIdentifier:_MLBFileTableViewCellReuseIdentifier];
+    [self.view addSubview:self.tableView];
+    
+    self.searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, self.view.bounds.size.width, 44)];
+    self.searchBar.delegate = self;
+    self.searchBar.barTintColor = [UIColor blackColor];
+    self.searchBar.enablesReturnKeyAutomatically = NO;
+    [self.view addSubview:self.searchBar];
+    
+    //hide searchBar icon
+    UITextField *textFieldInsideSearchBar = [self.searchBar valueForKey:@"searchField"];
+    textFieldInsideSearchBar.leftViewMode = UITextFieldViewModeNever;
+    textFieldInsideSearchBar.leftView = nil;
+    textFieldInsideSearchBar.backgroundColor = [UIColor whiteColor];
+    textFieldInsideSearchBar.returnKeyType = UIReturnKeyDefault;
 }
 
 - (void)registerForPreviewing {
@@ -141,22 +181,25 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     
     __weak _MLBDirectoryContentsTableViewController *weakSelf = self;
 
+    //子线程
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
         
         NSMutableArray<_MLBFileInfo *> *dataSource_ = [_MLBFileInfo contentsOfDirectoryAtURL:weakSelf.fileInfo.URL];
         if ([dataSource_ count] > 0) {
             weakSelf.dataSource = dataSource_;
+            weakSelf.dataSource_cache = dataSource_;
         }
         
+        //主线程
         dispatch_async(dispatch_get_main_queue(), ^{
             
             weakSelf.refreshItem.enabled = YES;
             [weakSelf updateToolbarItems];
-            if ([dataSource_ count] > 0) {
-                [weakSelf.tableView reloadData];
-            }
+            [weakSelf searchBar:weakSelf.searchBar textDidChange:weakSelf.searchBar.text];
         });
     });
+    
+    [self.searchBar resignFirstResponder];
 }
 
 - (_MLBFileInfo *)fileInfoAtIndexPath:(NSIndexPath *)indexPath {
@@ -167,7 +210,7 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     if (fileInfo.isDirectory) {
         _MLBDirectoryContentsTableViewController *directoryContentsTableViewController = [[_MLBDirectoryContentsTableViewController alloc] init];
         directoryContentsTableViewController.fileInfo = fileInfo;
-        directoryContentsTableViewController.hidesBottomBarWhenPushed = YES;//liman
+//        directoryContentsTableViewController.hidesBottomBarWhenPushed = YES;//liman
         return directoryContentsTableViewController;
     } else {
         if ([_Sandboxer shared].isShareable && fileInfo.isCanPreviewInQuickLook) {
@@ -269,27 +312,40 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     return message.copy;
 }
 
+#pragma mark - alert
 - (UIAlertController *)alertControllerForDeleteWithMessage:(NSString *)message deleteHandler:(void (^ __nullable)(UIAlertAction *action))handler {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-    [alertController addAction:[UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:handler]];
-    return alertController;
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+    [alert addAction:[UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:handler]];
+    return alert;
 }
 
-- (UIAlertView *)alertViewForDeleteWithMessage:(NSString *)message tag:(NSInteger)tag {
-    UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:nil message:message delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"Delete", nil];
-    alertView.tag = tag;
-    return alertView;
+- (void)showAlert {
+    UIAlertController *alert = [UIAlertController alertControllerWithTitle:@"Not supported" message:nil preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleCancel handler:nil];
+    [alert addAction:cancelAction];
+    if (@available(iOS 13, *)) {alert.modalPresentationStyle = UIModalPresentationFullScreen;}
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
-#pragma mark - Action
+#pragma mark - target action
+- (void)didTapView {
+    [self.searchBar resignFirstResponder];
+}
 
 - (void)editAction {
+    if (![_Sandboxer shared].isFileDeletable && ![_Sandboxer shared].isDirectoryDeletable) {
+        [self showAlert];
+        return;
+    }
+    
     if (!self.tableView.isEditing) {
         [self beginEditing];
     } else {
         [self endEditing];
     }
+    
+    [self.searchBar resignFirstResponder];
 }
 
 - (void)beginEditing {
@@ -337,15 +393,12 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     NSInteger directoryCount = 0;
     [self getDeletableFileCount:&fileCount directoryCount:&directoryCount];
     NSString *message = [self messageForDeleteWithFileCount:fileCount directoryCount:directoryCount];
-    if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-        UIAlertController *alertController = [self alertControllerForDeleteWithMessage:message deleteHandler:^(UIAlertAction *action) {
-            [self deleteAllFiles];
-        }];
-        if (@available(iOS 13, *)) {alertController.modalPresentationStyle = UIModalPresentationFullScreen;}
-        [self presentViewController:alertController animated:YES completion:nil];
-    } else {
-        [[self alertViewForDeleteWithMessage:message tag:kMLBDeleteAllAlertViewTag] show];
-    }
+    
+    UIAlertController *alert = [self alertControllerForDeleteWithMessage:message deleteHandler:^(UIAlertAction *action) {
+        [self deleteAllFiles];
+    }];
+    if (@available(iOS 13, *)) {alert.modalPresentationStyle = UIModalPresentationFullScreen;}
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)deleteSelectedFilesAction {
@@ -363,15 +416,12 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     }
     
     NSString *message = [self messageForDeleteWithFileCount:fileCount directoryCount:directoryCount];
-    if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-        UIAlertController *alertController = [self alertControllerForDeleteWithMessage:message deleteHandler:^(UIAlertAction *action) {
-            [self deleteSelectedFiles];
-        }];
-        if (@available(iOS 13, *)) {alertController.modalPresentationStyle = UIModalPresentationFullScreen;}
-        [self presentViewController:alertController animated:YES completion:nil];
-    } else {
-        [[self alertViewForDeleteWithMessage:message tag:kMLBDeleteSelectedAlertViewTag] show];
-    }
+    
+    UIAlertController *alert = [self alertControllerForDeleteWithMessage:message deleteHandler:^(UIAlertAction *action) {
+        [self deleteSelectedFiles];
+    }];
+    if (@available(iOS 13, *)) {alert.modalPresentationStyle = UIModalPresentationFullScreen;}
+    [self presentViewController:alert animated:YES completion:nil];
 }
 
 - (void)deleteAllFiles {
@@ -387,6 +437,9 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     }];
     
     [self.dataSource removeObjectsInArray:deletedFileInfos];
+    
+    //TODO... cache search
+    
     [self.tableView deleteRowsAtIndexPaths:deletedIndexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
     
     [self endEditing];
@@ -403,6 +456,9 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     }
     
     [self.dataSource removeObjectsInArray:deletedFileInfos];
+    
+    //TODO... cache search
+    
     [self.tableView deleteRowsAtIndexPaths:self.tableView.indexPathsForSelectedRows withRowAnimation:UITableViewRowAnimationAutomatic];
     
     [self endEditing];
@@ -414,6 +470,14 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
         index = [self.dataSource indexOfObject:self.deletingFileInfo];
         
         [self.dataSource removeObject:self.deletingFileInfo];
+        
+        if ([self.dataSource_cache count] > 0 && [self.dataSource_cache containsObject:self.deletingFileInfo]) {
+            [self.dataSource_cache removeObject:self.deletingFileInfo];
+        }
+        if ([self.dataSource_search count] > 0 && [self.dataSource_search containsObject:self.deletingFileInfo]) {
+            [self.dataSource_search removeObject:self.deletingFileInfo];
+        }
+        
         if (index >= 0) {
             [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:index inSection:0]] withRowAnimation:UITableViewRowAnimationFade];
         }
@@ -450,7 +514,8 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     _MLBFileInfo *fileInfo = [self fileInfoAtIndexPath:indexPath];
     cell.imageView.image = [_MLBImageResources fileTypeImageNamed:fileInfo.typeImageName];
     cell.textLabel.text = [_Sandboxer shared].isExtensionHidden ? fileInfo.displayName.stringByDeletingPathExtension : fileInfo.displayName;
-    cell.accessoryType = fileInfo.isDirectory ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+//    cell.accessoryType = fileInfo.isDirectory ? UITableViewCellAccessoryDisclosureIndicator : UITableViewCellAccessoryNone;
+    cell.accessoryType = UITableViewCellAccessoryNone; //liman
     
     //liman
     NSMutableAttributedString *attributedString = [[NSMutableAttributedString alloc] initWithString:fileInfo.modificationDateText];
@@ -483,21 +548,21 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
             [message appendString:@"Are you sure to delete this file?"];
         }
         
-        if (_SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(@"8.0")) {
-            UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
-            [alertController addAction:[UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-                [self deleteSelectedFile];
-            }]];
-            if (@available(iOS 13, *)) {alertController.modalPresentationStyle = UIModalPresentationFullScreen;}
-            [self presentViewController:alertController animated:YES completion:nil];
-        } else {
-            [[self alertViewForDeleteWithMessage:message tag:kMLBDeleteAlertViewTag] show];
-        }
+        UIAlertController *alert = [UIAlertController alertControllerWithTitle:nil message:message preferredStyle:UIAlertControllerStyleAlert];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Cancel" style:UIAlertActionStyleCancel handler:nil]];
+        [alert addAction:[UIAlertAction actionWithTitle:@"Delete" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
+            [self deleteSelectedFile];
+        }]];
+        if (@available(iOS 13, *)) {alert.modalPresentationStyle = UIModalPresentationFullScreen;}
+        [self presentViewController:alert animated:YES completion:nil];
     }
 }
 
-#pragma mark UITableViewDelegate
+#pragma mark - UITableViewDelegate
+
+- (UIView *)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section {
+    return self.searchBar;
+}
 
 - (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath {
     return UITableViewCellEditingStyleDelete;
@@ -514,6 +579,8 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     } else {
         [self.navigationController pushViewController:[self viewControllerWithFileInfo:fileInfo] animated:YES];
     }
+    
+    [self.searchBar resignFirstResponder];
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -523,20 +590,6 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
             
         } else {
             [self updateToolbarDeleteItem];
-        }
-    }
-}
-
-#pragma mark - UIAlertViewDelegate
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-    if (buttonIndex != alertView.cancelButtonIndex) {
-        if (alertView.tag == kMLBDeleteAlertViewTag) {
-            [self deleteSelectedFile];
-        } else if (alertView.tag == kMLBDeleteAllAlertViewTag) {
-            [self deleteAllFiles];
-        } else if (alertView.tag == kMLBDeleteSelectedAlertViewTag) {
-            [self deleteSelectedFiles];
         }
     }
 }
@@ -587,7 +640,42 @@ NSInteger const kMLBDeleteSelectedAlertViewTag = 121; // Toolbar Delete
     [self showViewController:viewControllerToCommit sender:self];
 }
 
-@end
+#pragma mark - UIScrollViewDelegate
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
+    [self.searchBar resignFirstResponder];
+}
 
-#pragma clang diagnostic pop
+#pragma mark - UISearchBarDelegate
+- (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar {
+    [self.searchBar resignFirstResponder];
+}
+
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+    if (searchText && ![self.searchText isEqualToString:searchText]) {
+        [[_SandboxerHelper sharedInstance].searchTextDictionary setObject:searchText forKey:self.randomId];
+    }
+
+    if (!searchText || [searchText isEqualToString:@""]) {
+        self.dataSource = self.dataSource_cache;
+        [self.tableView reloadData];
+        return;
+    }
+    
+    if (!self.dataSource_search) {
+        self.dataSource_search = [NSMutableArray array];
+    } else {
+        [self.dataSource_search removeAllObjects];
+    }
+    
+    for (_MLBFileInfo *obj in self.dataSource_cache) {
+        if ([[obj.displayName lowercaseString] containsString:[searchText lowercaseString]]) {
+            [self.dataSource_search addObject:obj];
+        }
+    }
+    
+    self.dataSource = self.dataSource_search;
+    [self.tableView reloadData];
+}
+
+@end
 

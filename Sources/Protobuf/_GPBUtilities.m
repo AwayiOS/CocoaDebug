@@ -29,13 +29,15 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "_GPBUtilities_PackagePrivate.h"
+
+#import <objc/runtime.h>
+
 #import "_GPBArray_PackagePrivate.h"
 #import "_GPBDescriptor_PackagePrivate.h"
 #import "_GPBDictionary_PackagePrivate.h"
 #import "_GPBMessage_PackagePrivate.h"
 #import "_GPBUnknownField.h"
 #import "_GPBUnknownFieldSet.h"
-#import <objc/runtime.h>
 
 // Direct access is use for speed, to avoid even internally declaring things
 // read/write, etc. The warning is enabled in the project to ensure code calling

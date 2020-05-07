@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import UIKit
@@ -18,6 +18,7 @@ class NetworkViewController: UIViewController {
     var cacheModels: Array<_HttpModel>?
     var searchModels: Array<_HttpModel>?
     
+    var naviItemTitleLabel: UILabel?
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -92,21 +93,26 @@ class NetworkViewController: UIViewController {
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
         
+        naviItemTitleLabel = UILabel.init(frame: CGRect(x: 0, y: 0, width: 80, height: 40))
+        naviItemTitleLabel?.textAlignment = .center
+        naviItemTitleLabel?.textColor = Color.mainGreen
+        naviItemTitleLabel?.font = .boldSystemFont(ofSize: 20)
+        naviItem.titleView = naviItemTitleLabel
         
-        naviItem.title = "[0]"
+        naviItemTitleLabel?.text = "[0]"
         deleteItem.tintColor = Color.mainGreen
         
         //notification
-        NotificationCenter.default.addObserver(self, selector: #selector(reloadHttp_notification), name: NSNotification.Name(rawValue: "reloadHttp_SSPDebug"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(reloadHttp_notification), name: NSNotification.Name(rawValue: "reloadHttp_CocoaDebug"), object: nil)
         
         tableView.tableFooterView = UIView()
         tableView.dataSource = self
         tableView.delegate = self
         
         //抖动bug
-        tableView.estimatedRowHeight = 0;
-        tableView.estimatedSectionHeaderHeight = 0;
-        tableView.estimatedSectionFooterHeight = 0;
+        tableView.estimatedRowHeight = 0
+        tableView.estimatedSectionHeaderHeight = 0
+        tableView.estimatedSectionFooterHeight = 0
         
         searchBar.delegate = self
         searchBar.text = CocoaDebugSettings.shared.networkSearchWord
@@ -117,7 +123,7 @@ class NetworkViewController: UIViewController {
         textFieldInsideSearchBar.leftViewMode = .never
         textFieldInsideSearchBar.leftView = nil
         textFieldInsideSearchBar.backgroundColor = .white
-        
+        textFieldInsideSearchBar.returnKeyType = .default
         
         reloadHttp(needScrollToEnd: true)
         
@@ -160,15 +166,17 @@ class NetworkViewController: UIViewController {
         _HttpDatasource.shared().reset()
         models = []
         cacheModels = []
-        searchBar.text = nil
+//        searchBar.text = nil
         searchBar.resignFirstResponder()
-        CocoaDebugSettings.shared.networkSearchWord = nil
+//        CocoaDebugSettings.shared.networkSearchWord = nil
         CocoaDebugSettings.shared.networkLastIndex = 0
 
         dispatch_main_async_safe { [weak self] in
             self?.tableView.reloadData()
-            self?.naviItem.title = "[0]"
+            self?.naviItemTitleLabel?.text = "[0]"
         }
+        
+        NotificationCenter.default.post(name: NSNotification.Name("deleteAllLogs_CocoaDebug"), object: nil, userInfo: nil)
     }
     
     @objc func didTapView() {
@@ -189,7 +197,7 @@ extension NetworkViewController: UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if let count = models?.count {
-            naviItem.title = "[" + String(count) + "]"
+            naviItemTitleLabel?.text = "[" + String(count) + "]"
             return count
         }
         return 0
@@ -295,8 +303,14 @@ extension NetworkViewController: UITableViewDelegate {
         
         let delete = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, sourceView, completionHandler) in
             guard let models = self?.models else {return}
-            _HttpDatasource.shared().remove(models[indexPath.row])
+            
+            let model: _HttpModel = models[indexPath.row]
+            _HttpDatasource.shared().remove(model)
+            
             self?.models?.remove(at: indexPath.row)
+            _ = self?.cacheModels?.firstIndex(of: model).map { self?.cacheModels?.remove(at: $0) }
+            _ = self?.searchModels?.firstIndex(of: model).map { self?.searchModels?.remove(at: $0) }
+            
             self?.dispatch_main_async_safe { [weak self] in
                 self?.tableView.deleteRows(at: [indexPath], with: .automatic)
             }
@@ -323,8 +337,14 @@ extension NetworkViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == .delete) {
             guard let models = self.models else {return}
-            _HttpDatasource.shared().remove(models[indexPath.row])
+            
+            let model: _HttpModel = models[indexPath.row]
+            _HttpDatasource.shared().remove(model)
+            
             self.models?.remove(at: indexPath.row)
+            _ = self.cacheModels?.firstIndex(of: model).map { self.cacheModels?.remove(at: $0) }
+            _ = self.searchModels?.firstIndex(of: model).map { self.searchModels?.remove(at: $0) }
+            
             self.dispatch_main_async_safe { [weak self] in
                 self?.tableView.deleteRows(at: [indexPath], with: .automatic)
             }

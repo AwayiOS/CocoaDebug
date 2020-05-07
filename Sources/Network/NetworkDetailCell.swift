@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import Foundation
@@ -25,7 +25,8 @@ class NetworkDetailCell: UITableViewCell {
     
     
     var tapEditViewCallback:((NetworkDetailModel?) -> Void)?
-    
+    var showCellAlert:(() -> Void)?
+
     var detailModel: NetworkDetailModel? {
         didSet {
             
@@ -85,11 +86,14 @@ class NetworkDetailCell: UITableViewCell {
     //MARK: - override
     override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
         if action == #selector(selectAll(_:)) {
+            if let showCellAlert = showCellAlert {
+                showCellAlert()
+            }
             return true
         }
         return super.canPerformAction(action, withSender: sender)
     }
-    
+
     override func selectAll(_ sender: Any?) {
         contentTextView.selectAll(sender)
     }

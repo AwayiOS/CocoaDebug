@@ -1,13 +1,19 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 #import "_OCLogStoreManager.h"
 #import "_NetworkHelper.h"
+
+@interface _OCLogStoreManager ()
+{
+    dispatch_semaphore_t semaphore;
+}
+@end
 
 @implementation _OCLogStoreManager
 
@@ -27,6 +33,8 @@
 {
     self = [super init];
     if (self) {
+        semaphore = dispatch_semaphore_create(1);
+        
         self.defaultLogArray = [NSMutableArray arrayWithCapacity:[[_NetworkHelper shared] logMaxCount]];
         self.colorLogArray = [NSMutableArray arrayWithCapacity:[[_NetworkHelper shared] logMaxCount]];
         self.h5LogArray = [NSMutableArray arrayWithCapacity:[[_NetworkHelper shared] logMaxCount]];
@@ -36,6 +44,8 @@
 
 - (void)addLog:(_OCLogModel *)log
 {
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+    
     if (log.h5LogType == H5LogTypeNone)
     {
         if (log.color == [UIColor whiteColor] || log.color == nil)
@@ -46,6 +56,7 @@
                     [self.defaultLogArray removeObjectAtIndex:0];
                 }
             }
+            
             [self.defaultLogArray addObject:log];
         }
         else
@@ -56,6 +67,7 @@
                     [self.colorLogArray removeObjectAtIndex:0];
                 }
             }
+            
             [self.colorLogArray addObject:log];
         }
     }
@@ -67,12 +79,17 @@
                 [self.h5LogArray removeObjectAtIndex:0];
             }
         }
+        
         [self.h5LogArray addObject:log];
     }
+    
+    dispatch_semaphore_signal(semaphore);
 }
 
 - (void)removeLog:(_OCLogModel *)log
 {
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+
     if (log.h5LogType == H5LogTypeNone)
     {
         if (log.color == [UIColor whiteColor] || log.color == nil) {
@@ -88,21 +105,29 @@
         //H5
         [self.h5LogArray removeObject:log];
     }
+    
+    dispatch_semaphore_signal(semaphore);
 }
 
 - (void)resetDefaultLogs
 {
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     [self.defaultLogArray removeAllObjects];
+    dispatch_semaphore_signal(semaphore);
 }
 
 - (void)resetColorLogs
 {
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     [self.colorLogArray removeAllObjects];
+    dispatch_semaphore_signal(semaphore);
 }
 
 - (void)resetH5Logs
 {
+    dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
     [self.h5LogArray removeAllObjects];
+    dispatch_semaphore_signal(semaphore);
 }
 
 @end

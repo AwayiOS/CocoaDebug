@@ -29,6 +29,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "_GPBWireFormat.h"
+
 #import "_GPBUtilities_PackagePrivate.h"
 
 enum {

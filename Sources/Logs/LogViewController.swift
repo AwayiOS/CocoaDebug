@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import UIKit
@@ -274,7 +274,7 @@ class LogViewController: UIViewController {
         }
         
         //notification
-        NotificationCenter.default.addObserver(self, selector: #selector(refreshLogs_notification), name: NSNotification.Name(rawValue: "refreshLogs_SSPDebug"), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(refreshLogs_notification), name: NSNotification.Name(rawValue: "refreshLogs_CocoaDebug"), object: nil)
 
         
         defaultTableView.tableFooterView = UIView()
@@ -285,9 +285,9 @@ class LogViewController: UIViewController {
         defaultSearchBar.text = CocoaDebugSettings.shared.logSearchWordDefault
         defaultSearchBar.isHidden = true
         //抖动bug
-        defaultTableView.estimatedRowHeight = 0;
-        defaultTableView.estimatedSectionHeaderHeight = 0;
-        defaultTableView.estimatedSectionFooterHeight = 0;
+        defaultTableView.estimatedRowHeight = 0
+        defaultTableView.estimatedSectionHeaderHeight = 0
+        defaultTableView.estimatedSectionFooterHeight = 0
         
         
         
@@ -299,9 +299,9 @@ class LogViewController: UIViewController {
         colorSearchBar.text = CocoaDebugSettings.shared.logSearchWordColor
         colorSearchBar.isHidden = true
         //抖动bug
-        colorTableView.estimatedRowHeight = 0;
-        colorTableView.estimatedSectionHeaderHeight = 0;
-        colorTableView.estimatedSectionFooterHeight = 0;
+        colorTableView.estimatedRowHeight = 0
+        colorTableView.estimatedSectionHeaderHeight = 0
+        colorTableView.estimatedSectionFooterHeight = 0
         
         
         
@@ -313,9 +313,9 @@ class LogViewController: UIViewController {
         h5SearchBar.text = CocoaDebugSettings.shared.logSearchWordH5
         h5SearchBar.isHidden = true
         //抖动bug
-        h5TableView.estimatedRowHeight = 0;
-        h5TableView.estimatedSectionHeaderHeight = 0;
-        h5TableView.estimatedSectionFooterHeight = 0;
+        h5TableView.estimatedRowHeight = 0
+        h5TableView.estimatedSectionHeaderHeight = 0
+        h5TableView.estimatedSectionFooterHeight = 0
         
         
         
@@ -340,16 +340,19 @@ class LogViewController: UIViewController {
         textFieldInsideSearchBar.leftViewMode = .never
         textFieldInsideSearchBar.leftView = nil
         textFieldInsideSearchBar.backgroundColor = .white
-        
+        textFieldInsideSearchBar.returnKeyType = .default
+
         let textFieldInsideSearchBar2 = colorSearchBar.value(forKey: "searchField") as! UITextField
         textFieldInsideSearchBar2.leftViewMode = .never
         textFieldInsideSearchBar2.leftView = nil
         textFieldInsideSearchBar2.backgroundColor = .white
-        
+        textFieldInsideSearchBar2.returnKeyType = .default
+
         let textFieldInsideSearchBar3 = h5SearchBar.value(forKey: "searchField") as! UITextField
         textFieldInsideSearchBar3.leftViewMode = .never
         textFieldInsideSearchBar3.leftView = nil
         textFieldInsideSearchBar3.backgroundColor = .white
+        textFieldInsideSearchBar3.returnKeyType = .default
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -414,9 +417,9 @@ class LogViewController: UIViewController {
         {
             defaultModels = []
             defaultCacheModels = []
-            defaultSearchBar.text = nil
+//            defaultSearchBar.text = nil
             defaultSearchBar.resignFirstResponder()
-            CocoaDebugSettings.shared.logSearchWordDefault = nil
+//            CocoaDebugSettings.shared.logSearchWordDefault = nil
             
             _OCLogStoreManager.shared().resetDefaultLogs()
             
@@ -428,9 +431,9 @@ class LogViewController: UIViewController {
         {
             colorModels = []
             colorCacheModels = []
-            colorSearchBar.text = nil
+//            colorSearchBar.text = nil
             colorSearchBar.resignFirstResponder()
-            CocoaDebugSettings.shared.logSearchWordColor = nil
+//            CocoaDebugSettings.shared.logSearchWordColor = nil
             
             _OCLogStoreManager.shared().resetColorLogs()
             
@@ -442,9 +445,9 @@ class LogViewController: UIViewController {
         {
             h5Models = []
             h5CacheModels = []
-            h5SearchBar.text = nil
+//            h5SearchBar.text = nil
             h5SearchBar.resignFirstResponder()
-            CocoaDebugSettings.shared.logSearchWordH5 = nil
+//            CocoaDebugSettings.shared.logSearchWordH5 = nil
             
             _OCLogStoreManager.shared().resetH5Logs()
             
@@ -529,6 +532,8 @@ extension LogViewController: UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "LogCell", for: indexPath) as! LogCell
+        
         if tableView == defaultTableView
         {
             //否则偶尔crash
@@ -536,10 +541,7 @@ extension LogViewController: UITableViewDataSource {
                 return UITableViewCell()
             }
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: "LogCell", for: indexPath)
-                as! LogCell
             cell.model = defaultModels[indexPath.row]
-            return cell
         }
         else if tableView == colorTableView
         {
@@ -548,10 +550,7 @@ extension LogViewController: UITableViewDataSource {
                 return UITableViewCell()
             }
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: "LogCell", for: indexPath)
-                as! LogCell
             cell.model = colorModels[indexPath.row]
-            return cell
         }
         else
         {
@@ -560,12 +559,29 @@ extension LogViewController: UITableViewDataSource {
                 return UITableViewCell()
             }
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: "LogCell", for: indexPath)
-                as! LogCell
             cell.model = h5Models[indexPath.row]
-            return cell
         }
+        
+        cell.showCellAlert = { [weak self] in
+            self?.showCellAlert(labelContent: cell.labelContent)
+        }
+        return cell
     }
+    
+    //MARK: - alert
+    func showCellAlert(labelContent: UITextView) {
+        let alert = UIAlertController.init(title: nil, message: nil, preferredStyle: .alert)
+        let cancelAction = UIAlertAction.init(title: "Cancel", style: .cancel, handler: nil)
+        let okAction = UIAlertAction.init(title: "Copy All", style: .default) { _ in
+            UIPasteboard.general.string = labelContent.text
+        }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        if #available(iOS 13, *) {alert.modalPresentationStyle = .fullScreen}
+        self.present(alert, animated: true, completion: nil)
+    }
+
 }
 
 //MARK: - UITableViewDelegate
@@ -656,8 +672,14 @@ extension LogViewController: UITableViewDelegate {
         {
             let delete = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, sourceView, completionHandler) in
                 guard let models = self?.defaultModels else {return}
-                _OCLogStoreManager.shared().removeLog(models[indexPath.row])
+                
+                let model: _OCLogModel = models[indexPath.row]
+                _OCLogStoreManager.shared().removeLog(model)
+                
                 self?.defaultModels.remove(at: indexPath.row)
+                _ = self?.defaultCacheModels?.firstIndex(of: model).map { self?.defaultCacheModels?.remove(at: $0) }
+                _ = self?.defaultSearchModels?.firstIndex(of: model).map { self?.defaultSearchModels?.remove(at: $0) }
+                
                 self?.dispatch_main_async_safe { [weak self] in
                     self?.defaultTableView.deleteRows(at: [indexPath], with: .automatic)
                 }
@@ -671,8 +693,14 @@ extension LogViewController: UITableViewDelegate {
         {
             let delete = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, sourceView, completionHandler) in
                 guard let models = self?.colorModels else {return}
-                _OCLogStoreManager.shared().removeLog(models[indexPath.row])
+                
+                let model: _OCLogModel = models[indexPath.row]
+                _OCLogStoreManager.shared().removeLog(model)
+                
                 self?.colorModels.remove(at: indexPath.row)
+                _ = self?.colorCacheModels?.firstIndex(of: model).map { self?.colorCacheModels?.remove(at: $0) }
+                _ = self?.colorSearchModels?.firstIndex(of: model).map { self?.colorSearchModels?.remove(at: $0) }
+                
                 self?.dispatch_main_async_safe { [weak self] in
                     self?.colorTableView.deleteRows(at: [indexPath], with: .automatic)
                 }
@@ -686,8 +714,14 @@ extension LogViewController: UITableViewDelegate {
         {
             let delete = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, sourceView, completionHandler) in
                 guard let models = self?.h5Models else {return}
-                _OCLogStoreManager.shared().removeLog(models[indexPath.row])
+                
+                let model: _OCLogModel = models[indexPath.row]
+                _OCLogStoreManager.shared().removeLog(model)
+                
                 self?.h5Models.remove(at: indexPath.row)
+                _ = self?.h5CacheModels?.firstIndex(of: model).map { self?.h5CacheModels?.remove(at: $0) }
+                _ = self?.h5SearchModels?.firstIndex(of: model).map { self?.h5SearchModels?.remove(at: $0) }
+                
                 self?.dispatch_main_async_safe { [weak self] in
                     self?.h5TableView.deleteRows(at: [indexPath], with: .automatic)
                 }
@@ -713,8 +747,14 @@ extension LogViewController: UITableViewDelegate {
         if tableView == defaultTableView
         {
             if (editingStyle == .delete) {
-                _OCLogStoreManager.shared().removeLog(defaultModels[indexPath.row])
+                
+                let model: _OCLogModel = defaultModels[indexPath.row]
+                _OCLogStoreManager.shared().removeLog(model)
+                
                 self.defaultModels.remove(at: indexPath.row)
+                _ = self.defaultCacheModels?.firstIndex(of: model).map { self.defaultCacheModels?.remove(at: $0) }
+                _ = self.defaultSearchModels?.firstIndex(of: model).map { self.defaultSearchModels?.remove(at: $0) }
+                
                 self.dispatch_main_async_safe { [weak self] in
                     self?.defaultTableView.deleteRows(at: [indexPath], with: .automatic)
                 }
@@ -723,8 +763,14 @@ extension LogViewController: UITableViewDelegate {
         else if tableView == colorTableView
         {
             if (editingStyle == .delete) {
-                _OCLogStoreManager.shared().removeLog(colorModels[indexPath.row])
+                
+                let model: _OCLogModel = colorModels[indexPath.row]
+                _OCLogStoreManager.shared().removeLog(model)
+                
                 self.colorModels.remove(at: indexPath.row)
+                _ = self.colorCacheModels?.firstIndex(of: model).map { self.colorCacheModels?.remove(at: $0) }
+                _ = self.colorSearchModels?.firstIndex(of: model).map { self.colorSearchModels?.remove(at: $0) }
+                
                 self.dispatch_main_async_safe { [weak self] in
                     self?.colorTableView.deleteRows(at: [indexPath], with: .automatic)
                 }
@@ -733,8 +779,14 @@ extension LogViewController: UITableViewDelegate {
         else
         {
             if (editingStyle == .delete) {
-                _OCLogStoreManager.shared().removeLog(h5Models[indexPath.row])
+                
+                let model: _OCLogModel = h5Models[indexPath.row]
+                _OCLogStoreManager.shared().removeLog(model)
+                
                 self.h5Models.remove(at: indexPath.row)
+                _ = self.h5CacheModels?.firstIndex(of: model).map { self.h5CacheModels?.remove(at: $0) }
+                _ = self.h5SearchModels?.firstIndex(of: model).map { self.h5SearchModels?.remove(at: $0) }
+                
                 self.dispatch_main_async_safe { [weak self] in
                     self?.h5TableView.deleteRows(at: [indexPath], with: .automatic)
                 }

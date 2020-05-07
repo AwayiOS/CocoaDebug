@@ -29,11 +29,14 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "_GPBRootObject_PackagePrivate.h"
+
+#import <objc/runtime.h>
+
+#import <CoreFoundation/CoreFoundation.h>
+
 #import "_GPBDescriptor.h"
 #import "_GPBExtensionRegistry.h"
 #import "_GPBUtilities_PackagePrivate.h"
-#import <objc/runtime.h>
-#import <CoreFoundation/CoreFoundation.h>
 
 @interface _GPBExtensionDescriptor (_GPBRootObject)
 // Get singletonName as a c string.

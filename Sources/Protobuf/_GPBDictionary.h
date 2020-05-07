@@ -29,6 +29,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
+
 #import "_GPBRuntimeTypes.h"
 
 // Note on naming: for the classes holding numeric values, a more natural

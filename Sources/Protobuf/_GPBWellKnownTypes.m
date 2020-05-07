@@ -33,6 +33,7 @@
 // below would be stripped by the linker.
 
 #import "_GPBWellKnownTypes.h"
+
 #import "_GPBUtilities_PackagePrivate.h"
 
 NSString *const _GPBWellKnownTypesErrorDomain =

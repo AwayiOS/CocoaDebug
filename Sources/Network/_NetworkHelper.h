@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -27,6 +27,11 @@
  *  日志最大数量,默认`1000`
  */
 @property (nonatomic, assign) NSInteger logMaxCount;
+/**
+ *  protobuf
+ */
+@property (nonatomic, copy) NSDictionary<NSString *, NSArray<NSString*> *> *protobufTransferMap;
+
 
 @property (nonatomic, assign) BOOL isEnable;
 

@@ -2,8 +2,8 @@
 //  _MLBImageController.m
 //  Example_Objc
 //
-//  Created by man on 7/25/19.
-//  Copyright © 2019 liman. All rights reserved.
+//  Created by man.li on 7/25/19.
+//  Copyright © 2020 liman.li. All rights reserved.
 //
 
 #import "_MLBImageController.h"
@@ -14,7 +14,7 @@
 @property (nonatomic, strong) UIImageView *imageView;
 @property (nonatomic, strong) UIImage *image;
 @property (nonatomic, strong) _MLBFileInfo *fileInfo;
-@property (strong, nonatomic) UIDocumentInteractionController *documentInteractionController;
+@property (nonatomic, strong) UIDocumentInteractionController *documentInteractionController;
 @property (nonatomic, assign) BOOL flag;
 
 @end

@@ -1,4 +1,4 @@
-| <img alt="logo" src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/logo.png" width="250"/> | <ul align="left"><li><a href="https://github.com/CocoaDebug/CocoaDebug/wiki/%E4%B8%AD%E6%96%87%E4%BB%8B%E7%BB%8D">中文介绍</a><li><a href="#introduction">Introduction</a><li><a href="#installation">Installation</a><li><a href="#usage">Usage</a><li><a href="#parameters">Parameters</a></ul> |
+| <img alt="logo" src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/logo.png" width="250"/> | <ul align="left"><li><a href="#introduction">Introduction</a><li><a href="#installation">Installation</a><li><a href="#usage">Usage</a><li><a href="#parameters">Parameters</a></ul> |
 | -------------- | -------------- |
 | Travis CI | [![Build Status](https://travis-ci.org/CocoaDebug/CocoaDebug.svg?branch=master)](https://travis-ci.org/CocoaDebug/CocoaDebug) |
 | Codacy | [![Codacy Badge](https://api.codacy.com/project/badge/Grade/6aac8606d10f403a811cafdf870bb552)](https://www.codacy.com/app/CocoaDebug/CocoaDebug?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=CocoaDebug/CocoaDebug&amp;utm_campaign=Badge_Grade) |
@@ -10,9 +10,18 @@
 
 <span style="float:none" />
 
-## Introduction
+## Screenshot
 
-![example](https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/example.gif)
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/01.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/02.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/03.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/04.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/05.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/06.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/07.png" width="200">
+<img src="https://raw.githubusercontent.com/CocoaDebug/CocoaDebug/master/pic/08.png" width="200">
+
+## Introduction
 
 - [x] Shake to hide or show the black bubble. (support both device and simulator)
 
@@ -46,6 +55,7 @@
 
 ```ruby
 target 'YourTargetName' do
+    use_frameworks!
     pod 'CocoaDebug', :configurations => ['Debug']
 end
 ```
@@ -55,10 +65,6 @@ end
 ```ogdl
 github "CocoaDebug/CocoaDebug"
 ```
-
-### Framework
-
-[Download](https://github.com/CocoaDebug/CocoaDebug/raw/master/CocoaDebug.framework.zip)
 
 > WARNING: Don't submit `.ipa` to AppStore which has been linked with the `CocoaDebug.framework`. This [Integration Guide](https://github.com/CocoaDebug/CocoaDebug/wiki/Integration-Guide) outline a way to use build configurations to isolate linking the framework to `Debug` builds only.
 
@@ -73,6 +79,12 @@ github "CocoaDebug/CocoaDebug"
     #endif
 	
     #if DEBUG
+        //If Use Google's Protocol buffers
+        CocoaDebug.protobufTransferMap = [
+                                         "your_api_keywords_1": ["your_request_protobuf_className_1", "your_response_protobuf_className_1"],
+                                         "your_api_keywords_2": ["your_request_protobuf_className_2", "your_response_protobuf_className_2"],
+                                         "your_api_keywords_3": ["your_request_protobuf_className_3", "your_response_protobuf_className_3"]
+                                         ]
         CocoaDebug.enable()
     #endif
 
@@ -81,7 +93,6 @@ github "CocoaDebug/CocoaDebug"
             swiftLog(file, function, line, message, color, false)
         #endif
     }
-	
 
 ### Objective-C
 	
@@ -92,7 +103,23 @@ github "CocoaDebug/CocoaDebug"
     #endif
 	
     #ifdef DEBUG
+        //If Use Google's Protocol buffers
+        CocoaDebug.protobufTransferMap = @{
+                                          @"your_api_keywords_1": @[@"your_request_protobuf_className_1", @"your_response_protobuf_className_1"],
+                                          @"your_api_keywords_2": @[@"your_request_protobuf_className_2", @"your_response_protobuf_className_2"],
+                                          @"your_api_keywords_3": @[@"your_request_protobuf_className_3", @"your_response_protobuf_className_3"]
+                                         };
         [CocoaDebug enable];
+    #endif
+
+### More
+
+    #ifdef DEBUG
+        [CocoaDebugTool logWithString:string];
+        
+        NSString *prettyJSON = [CocoaDebugTool logWithJsonData:data];
+    
+        NSString *prettyJSON = [CocoaDebugTool logWithProtobufData:data className:@"protobuf_className"];
     #endif
 
 > Please check `Example_Swift.xcodeproj` and `Example_Objc.xcodeproj` for more advanced usage.
@@ -118,6 +145,8 @@ When you initialize CocoaDebug, you can customize the following parameter values
 - `emailCcRecipients` - Set the initial recipients to include in the email’s “Cc” field when share via email. default value is **nil**.
 
 - `mainColor` - Set the main color with hexadecimal format. default value is **#42d459**.
+
+- `protobufTransferMap` - Protobuf data transfer to JSON map. default value is **nil**.
 
 ## TODO
 

@@ -9,7 +9,7 @@
 #import "ViewController.h"
 #import "AFURLSessionManager.h"
 #import <WebKit/WebKit.h>
-#import "_TCPLogger.h"
+#import "CocoaDebugTool.h"
 
 @interface ViewController ()
 
@@ -20,28 +20,51 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.title = @"Example";
-
+    
     NSLog(@"hello world");
     NSLog(@"hello world red");
     NSLog(@"hello world yellow");
     NSLog(@"%d", 6666666);
     NSLog(@"unicode转换为中文");
     
-    [self testHTTP];
+    
     [self test_console_WKWebView];
-    [self test_console_UIWebView];
     
     
-    //TCP
-    [_TCPLogger logWithString:@"tcp messages...."];
+    
+    //Custom Messages
+    [CocoaDebugTool logWithString:@"Custom Messages...."];
+    [CocoaDebugTool logWithString:@"Custom Messages...." color:[UIColor redColor]];
+    
     
     //save image
     [self saveImage:[UIImage imageNamed:@"111.png"]];
+    
+    //save txt
+    [self saveTXT:@"hahahahahahahaha"];
+    
+    for (int i = 0; i < 20; i ++) {
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, i*2 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+            [self testHTTP];
+        });
+    }
 }
 
 - (void)saveImage:(UIImage *)image {
     NSString *imagePath = [NSHomeDirectory() stringByAppendingPathComponent:@"Documents/111"];
     [UIImagePNGRepresentation(image) writeToFile:imagePath atomically:YES];
+}
+
+- (void)saveTXT:(NSString *)txt {
+    NSArray *documentArray = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
+    NSString *documentPath = [documentArray firstObject];
+    NSLog(@"documentPath = %@",documentPath);
+    NSString *filePath = [documentPath stringByAppendingPathComponent:@"ios.txt"];
+    [[NSFileManager defaultManager] createFileAtPath:filePath contents:nil attributes:nil];
+    
+    NSString *iOSPath = [documentPath stringByAppendingPathComponent:@"ios.txt"];
+    NSString *content = txt;
+    [content writeToFile:iOSPath atomically:YES encoding:NSUTF8StringEncoding error:nil];
 }
 
 - (void)testHTTP {
@@ -95,18 +118,10 @@
     [dataTask_ resume];
 }
 
-
-
 - (void)test_console_WKWebView {
     WKWebView *webView = [WKWebView new];
     [self.view addSubview:webView];
     [webView loadHTMLString:[NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"index" ofType:@"html"] encoding:NSUTF8StringEncoding error:nil] baseURL:[[NSBundle mainBundle] bundleURL]];
-}
-
-- (void)test_console_UIWebView {
-    UIWebView *webView = [UIWebView new];
-    [self.view addSubview:webView];
-    [webView loadHTMLString:[NSString stringWithContentsOfFile:[[NSBundle mainBundle] pathForResource:@"index2" ofType:@"html"] encoding:NSUTF8StringEncoding error:nil] baseURL:[[NSBundle mainBundle] bundleURL]];
 }
 
 @end

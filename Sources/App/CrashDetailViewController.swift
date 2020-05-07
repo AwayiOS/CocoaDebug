@@ -1,18 +1,22 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import UIKit
 
 class CrashDetailViewController: UITableViewController {
     
-        @IBOutlet weak var textviewName: UITextView!
+    @IBOutlet weak var textviewName: UITextView!
     @IBOutlet weak var textviewReason: UITextView!
     @IBOutlet weak var textviewStackTraces: UITextView!
+    @IBOutlet weak var naviItem: UINavigationItem!
+    
+    var naviItemTitleLabel: UILabel?
+
     var crash: _CrashModel?
 
     static func instanceFromStoryBoard() -> CrashDetailViewController {
@@ -23,7 +27,14 @@ class CrashDetailViewController: UITableViewController {
     //MARK - init
     override func viewDidLoad() {
         super.viewDidLoad()
-                
+        
+        naviItemTitleLabel = UILabel.init(frame: CGRect(x: 0, y: 0, width: 80, height: 40))
+        naviItemTitleLabel?.textAlignment = .center
+        naviItemTitleLabel?.textColor = Color.mainGreen
+        naviItemTitleLabel?.font = .boldSystemFont(ofSize: 20)
+        naviItemTitleLabel?.text = "Details"
+        naviItem.titleView = naviItemTitleLabel
+        
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 50
         tableView.delegate = self

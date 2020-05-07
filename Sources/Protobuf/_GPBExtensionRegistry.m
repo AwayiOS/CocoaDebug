@@ -29,6 +29,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "_GPBExtensionRegistry.h"
+
 #import "_GPBBootstrap.h"
 #import "_GPBDescriptor.h"
 

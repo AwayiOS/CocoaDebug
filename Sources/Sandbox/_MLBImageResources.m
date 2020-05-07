@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 #import "_MLBImageResources.h"
@@ -15,11 +15,11 @@
 }
 
 + (UIImage * _Nullable)fileTypeImageNamed:(NSString * _Nonnull)imageName {
-    return [self imageNamed:imageName fileType:@"png" inDirectory:@"FileType"];
+    return [self imageNamed:imageName fileType:@"png" inDirectory:nil];
 }
 
 + (UIImage * _Nullable)imageNamed:(NSString * _Nonnull)imageName fileType:(NSString * _Nonnull)fileType inDirectory:(NSString * _Nullable)directory {
-    NSBundle *bundle = [NSBundle mainBundle];
+    NSBundle *bundle = [NSBundle bundleForClass:self.class];
     
     /* 默认系统会选择最适合的分辨率的那张图片，但是最低分辨率的图片必须存在，也就是 @1x 的图片，如果不存在，就会返回 nil。
        但是有时候不想要 @1x 的图片，所以就只能自己判断了。

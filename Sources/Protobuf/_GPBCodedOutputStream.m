@@ -29,10 +29,12 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "_GPBCodedOutputStream_PackagePrivate.h"
+
+#import <mach/vm_param.h>
+
 #import "_GPBArray.h"
 #import "_GPBUnknownFieldSet_PackagePrivate.h"
 #import "_GPBUtilities_PackagePrivate.h"
-#import <mach/vm_param.h>
 
 // These values are the existing values so as not to break any code that might
 // have already been inspecting them when they weren't documented/exposed.
@@ -372,12 +374,12 @@ static void _GPBWriteRawLittleEndian64(_GPBOutputBufferState *state,
 }
 
 - (void)writeEnumNoTag:(int32_t)value {
-  _GPBWriteRawVarint32(&state_, value);
+  _GPBWriteInt32NoTag(&state_, value);
 }
 
 - (void)writeEnum:(int32_t)fieldNumber value:(int32_t)value {
   _GPBWriteTagWithFormat(&state_, fieldNumber, _GPBWireFormatVarint);
-  _GPBWriteRawVarint32(&state_, value);
+  _GPBWriteInt32NoTag(&state_, value);
 }
 
 - (void)writeSFixed32NoTag:(int32_t)value {
@@ -1051,7 +1053,7 @@ size_t _GPBComputeUInt32SizeNoTag(int32_t value) {
 }
 
 size_t _GPBComputeEnumSizeNoTag(int32_t value) {
-  return _GPBComputeRawVarint32Size(value);
+  return _GPBComputeInt32SizeNoTag(value);
 }
 
 size_t _GPBComputeSFixed32SizeNoTag(int32_t value) {

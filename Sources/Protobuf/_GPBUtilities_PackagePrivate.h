@@ -29,7 +29,9 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
+
 #import "_GPBUtilities.h"
+
 #import "_GPBDescriptor_PackagePrivate.h"
 
 // Macros for stringifying library symbols. These are used in the generated
@@ -69,27 +71,31 @@ _GPB_INLINE void _GPBDebugCheckRuntimeVersion() {
 // Conversion functions for de/serializing floating point types.
 
 _GPB_INLINE int64_t _GPBConvertDoubleToInt64(double v) {
-  union { double f; int64_t i; } u;
-  u.f = v;
-  return u.i;
+  _GPBInternalCompileAssert(sizeof(double) == sizeof(int64_t), double_not_64_bits);
+  int64_t result;
+  memcpy(&result, &v, sizeof(result));
+  return result;
 }
 
 _GPB_INLINE int32_t _GPBConvertFloatToInt32(float v) {
-  union { float f; int32_t i; } u;
-  u.f = v;
-  return u.i;
+  _GPBInternalCompileAssert(sizeof(float) == sizeof(int32_t), float_not_32_bits);
+  int32_t result;
+  memcpy(&result, &v, sizeof(result));
+  return result;
 }
 
 _GPB_INLINE double _GPBConvertInt64ToDouble(int64_t v) {
-  union { double f; int64_t i; } u;
-  u.i = v;
-  return u.f;
+  _GPBInternalCompileAssert(sizeof(double) == sizeof(int64_t), double_not_64_bits);
+  double result;
+  memcpy(&result, &v, sizeof(result));
+  return result;
 }
 
 _GPB_INLINE float _GPBConvertInt32ToFloat(int32_t v) {
-  union { float f; int32_t i; } u;
-  u.i = v;
-  return u.f;
+  _GPBInternalCompileAssert(sizeof(float) == sizeof(int32_t), float_not_32_bits);
+  float result;
+  memcpy(&result, &v, sizeof(result));
+  return result;
 }
 
 _GPB_INLINE int32_t _GPBLogicalRightShift32(int32_t value, int32_t spaces) {

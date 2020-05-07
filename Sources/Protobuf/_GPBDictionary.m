@@ -29,6 +29,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "_GPBDictionary_PackagePrivate.h"
+
 #import "_GPBCodedInputStream_PackagePrivate.h"
 #import "_GPBCodedOutputStream_PackagePrivate.h"
 #import "_GPBDescriptor_PackagePrivate.h"
@@ -964,7 +965,7 @@ void _GPBDictionaryReadEntry(id mapDictionary,
 //%
 //%BOOL_VALUE_FOR_KEY_##HELPER(VALUE_NAME, VALUE_TYPE)
 //%
-//%BOOL_SET__GPBVALUE_FOR_KEY_##HELPER(VALUE_NAME, VALUE_TYPE, VisP)
+//%BOOL_SET_GPBVALUE_FOR_KEY_##HELPER(VALUE_NAME, VALUE_TYPE, VisP)
 //%
 //%- (void)enumerateForTextFormat:(void (NS_NOESCAPE ^)(id keyObj, id valueObj))block {
 //%  if (BOOL_DICT_HAS##HELPER(0, )) {
@@ -1175,7 +1176,7 @@ void _GPBDictionaryReadEntry(id mapDictionary,
 //%  }
 //%  return NO;
 //%}
-//%PDDM-DEFINE BOOL_SET__GPBVALUE_FOR_KEY_POD(VALUE_NAME, VALUE_TYPE, VisP)
+//%PDDM-DEFINE BOOL_SET_GPBVALUE_FOR_KEY_POD(VALUE_NAME, VALUE_TYPE, VisP)
 //%- (void)set_GPBGenericValue:(_GPBGenericValue *)value
 //%     for_GPBGenericValueKey:(_GPBGenericValue *)key {
 //%  int idx = (key->valueBool ? 1 : 0);
@@ -1372,7 +1373,7 @@ void _GPBDictionaryReadEntry(id mapDictionary,
 //%- (VALUE_TYPE)objectForKey:(BOOL)key {
 //%  return _values[key ? 1 : 0];
 //%}
-//%PDDM-DEFINE BOOL_SET__GPBVALUE_FOR_KEY_OBJECT(VALUE_NAME, VALUE_TYPE, VisP)
+//%PDDM-DEFINE BOOL_SET_GPBVALUE_FOR_KEY_OBJECT(VALUE_NAME, VALUE_TYPE, VisP)
 //%- (void)set_GPBGenericValue:(_GPBGenericValue *)value
 //%     for_GPBGenericValueKey:(_GPBGenericValue *)key {
 //%  int idx = (key->valueBool ? 1 : 0);

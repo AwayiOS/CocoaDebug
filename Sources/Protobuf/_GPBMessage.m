@@ -29,6 +29,11 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "_GPBMessage_PackagePrivate.h"
+
+#import <objc/runtime.h>
+#import <objc/message.h>
+#import <stdatomic.h>
+
 #import "_GPBArray_PackagePrivate.h"
 #import "_GPBCodedInputStream_PackagePrivate.h"
 #import "_GPBCodedOutputStream_PackagePrivate.h"
@@ -39,9 +44,6 @@
 #import "_GPBRootObject_PackagePrivate.h"
 #import "_GPBUnknownFieldSet_PackagePrivate.h"
 #import "_GPBUtilities_PackagePrivate.h"
-#import <objc/runtime.h>
-#import <objc/message.h>
-#import <stdatomic.h>
 
 // Direct access is use for speed, to avoid even internally declaring things
 // read/write, etc. The warning is enabled in the project to ensure code calling

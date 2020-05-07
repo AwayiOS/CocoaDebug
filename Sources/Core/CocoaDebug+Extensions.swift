@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import Foundation
@@ -89,6 +89,12 @@ extension String {
 extension Dictionary {
     func dictionaryToString() -> String? {
         return self.dictionaryToData()?.dataToString()
+    }
+}
+
+extension String {
+    func jsonStringToPrettyJsonString() -> String? {
+        return self.stringToDictionary()?.dictionaryToString()
     }
 }
 
@@ -247,20 +253,43 @@ extension UITableView {
 ///shake
 extension UIWindow {
     
+    private static var _myComputedProperty = [String:Bool]()
+    
+    var myComputedProperty:Bool {
+        get {
+            let tmpAddress = String(format: "%p", unsafeBitCast(self, to: Int.self))
+            return UIWindow._myComputedProperty[tmpAddress] ?? false
+        }
+        set(newValue) {
+            let tmpAddress = String(format: "%p", unsafeBitCast(self, to: Int.self))
+            UIWindow._myComputedProperty[tmpAddress] = newValue
+        }
+    }
+    
+    
     open override var canBecomeFirstResponder: Bool {
         return true
     }
     
-//    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-//        super.motionEnded(motion, with: event)
-//    }
-//
-//    open override func motionCancelled(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
-//        super.motionCancelled(motion, with: event)
-//    }
-    
     open override func motionBegan(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
         super.motionBegan(motion, with: event)
+        
+        self.myComputedProperty = true
+
+        if CocoaDebugSettings.shared.responseShake == false {return}
+        if motion == .motionShake {
+            if CocoaDebugSettings.shared.visible == true { return }
+            CocoaDebugSettings.shared.showBubbleAndWindow = !CocoaDebugSettings.shared.showBubbleAndWindow
+        }
+    }
+    
+    open override func motionEnded(_ motion: UIEvent.EventSubtype, with event: UIEvent?) {
+        super.motionEnded(motion, with: event)
+        
+        if self.myComputedProperty == true {
+            self.myComputedProperty = false
+            return
+        }
         
         if CocoaDebugSettings.shared.responseShake == false {return}
         if motion == .motionShake {
@@ -275,12 +304,17 @@ extension UIWindow {
 extension CocoaDebug {
     
     ///init
-    static func initializationMethod(serverURL: String? = nil, ignoredURLs: [String]? = nil, onlyURLs: [String]? = nil, tabBarControllers: [UIViewController]? = nil, emailToRecipients: [String]? = nil, emailCcRecipients: [String]? = nil, mainColor: String? = nil)
+    static func initializationMethod(serverURL: String? = nil, ignoredURLs: [String]? = nil, onlyURLs: [String]? = nil, tabBarControllers: [UIViewController]? = nil, emailToRecipients: [String]? = nil, emailCcRecipients: [String]? = nil, mainColor: String? = nil, protobufTransferMap: [String: [String]]? = nil)
     {
+        if CocoaDebugSettings.shared.isRunning == true {return}
+        
+        CocoaDebugSettings.shared.isRunning = true
+        
+        
         let disableCrashRecording = UserDefaults.standard.bool(forKey: "disableCrashRecording_CocoaDebug")
         let disableLogMonitoring = UserDefaults.standard.bool(forKey: "disableLogMonitoring_CocoaDebug")
         let disableNetworkMonitoring = UserDefaults.standard.bool(forKey: "disableNetworkMonitoring_CocoaDebug")
-        let disableHTMLConsoleMonitoring = UserDefaults.standard.bool(forKey: "disableHTMLConsoleMonitoring_CocoaDebug")
+        let enableWebViewMonitoring = UserDefaults.standard.bool(forKey: "enableWebViewMonitoring_CocoaDebug")
         
         
         if serverURL == nil {
@@ -309,18 +343,16 @@ extension CocoaDebug {
         }else{//not first launch
             CocoaDebugSettings.shared.showBubbleAndWindow = CocoaDebugSettings.shared.showBubbleAndWindow
         }
-        if CocoaDebugSettings.shared.showBubbleAndWindow == true {
-            _WindowHelper.shared.enable()
-        }
         
         CocoaDebugSettings.shared.visible = false
         CocoaDebugSettings.shared.logSearchWordDefault = nil
         CocoaDebugSettings.shared.logSearchWordColor = nil
         CocoaDebugSettings.shared.networkSearchWord = nil
         CocoaDebugSettings.shared.disableCrashRecording = disableCrashRecording
-        CocoaDebugSettings.shared.disableHTMLConsoleMonitoring = disableHTMLConsoleMonitoring
+        CocoaDebugSettings.shared.enableWebViewMonitoring = enableWebViewMonitoring
         CocoaDebugSettings.shared.logMaxCount = CocoaDebug.logMaxCount
-        
+        CocoaDebugSettings.shared.protobufTransferMap = protobufTransferMap
+
         let _ = _OCLogStoreManager.shared()
         CocoaDebugSettings.shared.responseShake = true
 //        CocoaDebugSettings.shared.responseShakeNetworkDetail = true
@@ -331,6 +363,9 @@ extension CocoaDebug {
         
         //color
         CocoaDebugSettings.shared.mainColor = mainColor ?? "#42d459"
+        
+        //slow animations
+        CocoaDebugSettings.shared.slowAnimations = false
         
         //log
         if disableLogMonitoring == true {
@@ -351,6 +386,8 @@ extension CocoaDebug {
     
     ///deinit
     static func deinitializationMethod() {
+        CocoaDebugSettings.shared.isRunning = false
+
         _WindowHelper.shared.disable()
         _NetworkHelper.shared().disable()
         _LogHelper.shared.enable = false

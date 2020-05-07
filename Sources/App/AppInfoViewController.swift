@@ -1,9 +1,9 @@
 //
 //  Example
-//  man
+//  man.li
 //
-//  Created by man on 11/11/2018.
-//  Copyright © 2018 man. All rights reserved.
+//  Created by man.li on 11/11/2018.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 import UIKit
@@ -25,12 +25,22 @@ class AppInfoViewController: UITableViewController {
     @IBOutlet weak var crashSwitch: UISwitch!
     @IBOutlet weak var logSwitch: UISwitch!
     @IBOutlet weak var networkSwitch: UISwitch!
-    @IBOutlet weak var htmlSwitch: UISwitch!
+    @IBOutlet weak var webViewSwitch: UISwitch!
+    @IBOutlet weak var slowAnimationsSwitch: UISwitch!
+    @IBOutlet weak var naviItem: UINavigationItem!
     
-    
+    var naviItemTitleLabel: UILabel?
+
     //MARK: - init
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        naviItemTitleLabel = UILabel.init(frame: CGRect(x: 0, y: 0, width: 80, height: 40))
+        naviItemTitleLabel?.textAlignment = .center
+        naviItemTitleLabel?.textColor = Color.mainGreen
+        naviItemTitleLabel?.font = .boldSystemFont(ofSize: 20)
+        naviItemTitleLabel?.text = "App"
+        naviItem.titleView = naviItemTitleLabel
         
         labelCrashCount.frame.size = CGSize(width: 30, height: 20)
 
@@ -52,15 +62,17 @@ class AppInfoViewController: UITableViewController {
             labelHtml.font = UIFont.systemFont(ofSize: 15)
         }
         
-        crashSwitch.isOn = CocoaDebugSettings.shared.disableCrashRecording
-        logSwitch.isOn = CocoaDebugSettings.shared.disableLogMonitoring
-        networkSwitch.isOn = CocoaDebugSettings.shared.disableNetworkMonitoring
-        htmlSwitch.isOn = CocoaDebugSettings.shared.disableHTMLConsoleMonitoring
+        crashSwitch.isOn = !CocoaDebugSettings.shared.disableCrashRecording
+        logSwitch.isOn = !CocoaDebugSettings.shared.disableLogMonitoring
+        networkSwitch.isOn = !CocoaDebugSettings.shared.disableNetworkMonitoring
+        webViewSwitch.isOn = CocoaDebugSettings.shared.enableWebViewMonitoring
+        slowAnimationsSwitch.isOn = CocoaDebugSettings.shared.slowAnimations
 
         crashSwitch.addTarget(self, action: #selector(crashSwitchChanged), for: UIControl.Event.valueChanged)
         logSwitch.addTarget(self, action: #selector(logSwitchChanged), for: UIControl.Event.valueChanged)
         networkSwitch.addTarget(self, action: #selector(networkSwitchChanged), for: UIControl.Event.valueChanged)
-        htmlSwitch.addTarget(self, action: #selector(htmlSwitchChanged), for: UIControl.Event.valueChanged)
+        webViewSwitch.addTarget(self, action: #selector(webViewSwitchChanged), for: UIControl.Event.valueChanged)
+        slowAnimationsSwitch.addTarget(self, action: #selector(slowAnimationsSwitchChanged), for: UIControl.Event.valueChanged)
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -70,23 +82,48 @@ class AppInfoViewController: UITableViewController {
         labelCrashCount.textColor = count > 0 ? .red : .white
     }
     
+    //MARK: - alert
+    func showAlert() {
+        let alert = UIAlertController.init(title: nil, message: "You must restart APP to ensure the changes take effect", preferredStyle: .alert)
+        let cancelAction = UIAlertAction.init(title: "Restart later", style: .cancel, handler: nil)
+        let okAction = UIAlertAction.init(title: "Restart now", style: .destructive) { _ in
+            #if DEBUG
+                exit(0)
+            #endif
+        }
+        
+        alert.addAction(cancelAction)
+        alert.addAction(okAction)
+        if #available(iOS 13, *) {alert.modalPresentationStyle = .fullScreen}
+        self.present(alert, animated: true, completion: nil)
+    }
+    
     //MARK: - target action
-    @objc func crashSwitchChanged(mySwitch: UISwitch) {
-        CocoaDebugSettings.shared.disableCrashRecording = mySwitch.isOn
+    @objc func crashSwitchChanged(sender: UISwitch) {
+        CocoaDebugSettings.shared.disableCrashRecording = !crashSwitch.isOn
+        self.showAlert()
     }
     
-    @objc func logSwitchChanged(mySwitch: UISwitch) {
-        CocoaDebugSettings.shared.disableLogMonitoring = mySwitch.isOn
+    @objc func logSwitchChanged(sender: UISwitch) {
+        CocoaDebugSettings.shared.disableLogMonitoring = !logSwitch.isOn
+        self.showAlert()
     }
     
-    @objc func networkSwitchChanged(mySwitch: UISwitch) {
-        CocoaDebugSettings.shared.disableNetworkMonitoring = mySwitch.isOn
+    @objc func networkSwitchChanged(sender: UISwitch) {
+        CocoaDebugSettings.shared.disableNetworkMonitoring = !networkSwitch.isOn
+        self.showAlert()
     }
     
-    @objc func htmlSwitchChanged(mySwitch: UISwitch) {
-        CocoaDebugSettings.shared.disableHTMLConsoleMonitoring = mySwitch.isOn
+    @objc func webViewSwitchChanged(sender: UISwitch) {
+        CocoaDebugSettings.shared.enableWebViewMonitoring = webViewSwitch.isOn
+        self.showAlert()
+    }
+    
+    @objc func slowAnimationsSwitchChanged(sender: UISwitch) {
+        CocoaDebugSettings.shared.slowAnimations = slowAnimationsSwitch.isOn
     }
 }
+
 
 //MARK: - UITableViewDelegate
 extension AppInfoViewController {
@@ -111,7 +148,7 @@ extension AppInfoViewController {
                 return 0
             }
         }
-        if indexPath.section == 4 && indexPath.row == 0 {
+        if indexPath.section == 5 && indexPath.row == 0 {
             if labelignoredURLs.text == "0" {
                 if UIScreen.main.scale == 3 {
                     return 1.5//plus,iPhone X

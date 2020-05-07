@@ -32,6 +32,7 @@
 // be included in code using protocol buffers.
 
 #import "_GPBBootstrap.h"
+
 #import "_GPBDescriptor_PackagePrivate.h"
 #import "_GPBExtensionInternals.h"
 #import "_GPBMessage_PackagePrivate.h"

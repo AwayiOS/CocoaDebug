@@ -2,8 +2,8 @@
 //  _NSLogHook.m
 //  Example_Swift
 //
-//  Created by man on 7/26/19.
-//  Copyright © 2019 man. All rights reserved.
+//  Created by man.li on 7/26/19.
+//  Copyright © 2019 man.li. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -37,7 +37,7 @@ void my_nslog(NSString *format, ...) {
 //    va_end(va);
 
 
-    [_OCLogHelper.shared handleLogWithFile:@"" function:@"" line:999999999 message:str color:[UIColor whiteColor]];
+    [_OCLogHelper.shared handleLogWithFile:@"" function:@"" line:999999999 message:str color:[UIColor whiteColor] type:CocoaDebugToolTypeNone];
 
     va_end(vl);
 }

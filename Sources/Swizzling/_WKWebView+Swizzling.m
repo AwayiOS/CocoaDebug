@@ -2,8 +2,8 @@
 //  WKWebView+Swizzling.m
 //  1233213
 //
-//  Created by man on 2019/1/8.
-//  Copyright © 2019年 man. All rights reserved.
+//  Created by man.li on 2019/1/8.
+//  Copyright © 2020 man.li. All rights reserved.
 //
 
 #import <WebKit/WebKit.h>
@@ -20,7 +20,7 @@
 #pragma mark - life
 + (void)load {
     
-    if (![[NSUserDefaults standardUserDefaults] boolForKey:@"disableHTMLConsoleMonitoring_CocoaDebug"]) {
+    if ([[NSUserDefaults standardUserDefaults] boolForKey:@"enableWebViewMonitoring_CocoaDebug"]) {
         
         static dispatch_once_t onceToken;
         dispatch_once(&onceToken, ^{
@@ -55,9 +55,6 @@
 - (instancetype)replaced_initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration {
     //WKWebView
     [_ObjcLog logWithFile:"[WKWebView]" function:"" line:0 color:[_NetworkHelper shared].mainColor unicodeToChinese:NO message:@"----------------------------------- init -----------------------------------"];
-    
-    //
-    [configuration.userContentController removeAllUserScripts];
     
     [self log:configuration];
     [self error:configuration];
@@ -146,14 +143,12 @@
 
 
 
+#pragma mark - WKScriptMessageHandler
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wobjc-protocol-method-implementation"
-
-#pragma mark - WKScriptMessageHandler
 - (void)userContentController:(WKUserContentController *)userContentController didReceiveScriptMessage:(WKScriptMessage *)message {
     [_ObjcLog logWithFile:"[WKWebView]" function:[message.name UTF8String] line:0 color:[UIColor whiteColor] unicodeToChinese:NO message:message.body];
 }
-
 #pragma clang diagnostic pop
 
 @end

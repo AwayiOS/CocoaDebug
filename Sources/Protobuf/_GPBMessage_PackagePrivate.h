@@ -33,12 +33,14 @@
 // subject to change at any time without notice.
 
 #import "_GPBMessage.h"
-#import "_GPBBootstrap.h"
+
 // TODO: Remove this import. Older generated code use the OSAtomic* apis,
 // so anyone that hasn't regenerated says building by having this. After
 // enough time has passed, this likely can be removed as folks should have
 // regenerated.
 #import <libkern/OSAtomic.h>
+
+#import "_GPBBootstrap.h"
 
 typedef struct _GPBMessage_Storage {
   uint32_t _has_storage_[0];

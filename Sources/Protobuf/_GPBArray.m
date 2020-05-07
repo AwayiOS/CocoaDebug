@@ -29,6 +29,7 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import "_GPBArray_PackagePrivate.h"
+
 #import "_GPBMessage_PackagePrivate.h"
 
 // Direct access is use for speed, to avoid even internally declaring things

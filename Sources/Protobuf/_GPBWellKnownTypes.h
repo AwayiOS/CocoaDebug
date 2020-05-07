@@ -29,9 +29,22 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #import <Foundation/Foundation.h>
-#import "_Any.pbobjc.h"
-#import "_Duration.pbobjc.h"
-#import "_Timestamp.pbobjc.h"
+
+// This CPP symbol can be defined to use imports that match up to the framework
+// imports needed when using CocoaPods.
+#if !defined(_GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS)
+ #define _GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS 0
+#endif
+
+#if _GPB_USE_PROTOBUF_FRAMEWORK_IMPORTS
+ #import <protobuf/Any.pbobjc.h>
+ #import <protobuf/Duration.pbobjc.h>
+ #import <protobuf/Timestamp.pbobjc.h>
+#else
+ #import "_Any.pbobjc.h"
+ #import "_Duration.pbobjc.h"
+ #import "_Timestamp.pbobjc.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
